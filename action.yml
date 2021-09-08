@@ -1,19 +1,57 @@
-name: 'JavaScript Action Template'
+name: 'create-release'
 
-description: 'Add description here'
-
+description: 'Create a release for a tag in your repository'
+author: 'GitHub'
 inputs:
-  input-1:
-    description: 'Add a description here'
+  github-token:
+    description: 'A token with permission to create and delete releases.  Generally secrets.GITHUB_TOKEN.'
     required: true
-  input-2:
-    description: 'Add a description here'
+  tag-name:
+    description: 'The name of the tag.'
+    required: true
+  release-name:
+    description: 'The name of the release. Defaults to the tag name if not provided.'
+    required: false
+  commitish:
+    description: 'Any branch or commit SHA the Git tag is created from. Default: SHA of current commit.'
+    required: false
+  body:
+    description: 'Text describing the contents of the release.'
+    required: false
+  body-path:
+    description: 'Path to file with information about the release.'
+    required: false
+  draft:
+    description: 'Flag indicating whether to create a draft (unpublished) release or a published one.  Accepted Values: `true|false`.  Default: `false`.'
+    required: false
+    default: 'false'
+  prerelease:
+    description: 'Flag indicating whether this release is a pre-release or a full release.  Accepted Values: `true|false`.  Default: `false`.'
+    required: false
+    default: 'false'
+  delete-existing-release:
+    description: 'Flag indicating whether to delete then re-create a release if it already exists.  Accepted Values: `true|false`.  Default: `false`.'
+    required: false
+    default: 'false'
+  asset-path:
+    description: 'The path to the asset you want to upload.  Required when uploading an asset.'
+    required: false
+  asset-name:
+    description: 'The name of the asset you want to upload.   Required when uploading an asset.'
+    required: false
+  asset-content-type:
+    description: 'The content-type of the asset you want to upload. See the supported Media Types here: https://www.iana.org/assignments/media-types/media-types.xhtml for more information.  Required when uploading an asset.'
     required: false
 
 outputs:
-  output-1:
-    description: 'Add a description here'
-
+  release-id:
+    description: 'Release ID'
+  release-html-url:
+    description: 'URL to the Release HTML Page'
+  asset-upload-url:
+    description: 'URL for uploading assets to the release'
+  asset-browser-download-url:
+    description: 'URL users can navigate to in order to download the uploaded asset'
 runs:
   using: 'node12'
   main: 'dist/index.js'

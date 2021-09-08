@@ -19,7 +19,8 @@
   "author": "wtw",
   "license": "ISC",
   "dependencies": {
-    "@actions/core": "^1.2.7"
+    "@actions/core": "^1.2.7",
+    "@actions/github": "1.0.1"
   },
   "devDependencies": {
     "esbuild": "^0.12.8",
