@@ -1,7 +1,11 @@
 # create-release
 
-This action can be used to create a GitHub Release and optionally upload an asset to the release.  This action is based on two GitHub actions [upload-release] and [create-release-asset] which have been deprecated.
-   
+This action can be used to create a GitHub Release and optionally upload an asset to the release.  This action is based on two GitHub actions [create-release] and [upload-release-asset] which have been deprecated.
+
+This action has the option of uploading a single asset to the release.  If more than one artifact is needed or if the artifact is not available when the release is created the [im-open/upload-release-asset] action can be used.
+
+This action also has the option of deleting the release if it already exists.  If a workflow tries to create a release that already exists it will fail which may happen when a workflow is re-run.  This functionality is also provided in the [im-open/delete-release-by-tag] action if a release needs to be deleted before the release is created.
+
 ## Inputs
 | Parameter                 | Is Required                      | Default | Description                                                                                                                                |
 | ------------------------- | -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -97,6 +101,8 @@ This project has adopted the [im-open's Code of Conduct](https://github.com/im-o
 
 Copyright &copy; 2021, Extend Health, LLC. Code released under the [MIT license](LICENSE).
 
-[upload-release]: https://github.com/actions/upload-release
-[create-release-asset]: https://github.com/actions/create-release-asset
+[create-release]: https://github.com/actions/create-release
+[upload-release-asset]: https://github.com/actions/upload-release-asset
+[im-open/delete-release-by-tag]: https://github.com/im-open/delete-release-by-tag
+[im-open/upload-release-asset]: https://github.com/im-open/upload-release-asset
 [supported Media Types]: https://www.iana.org/assignments/media-types/media-types.xhtml
