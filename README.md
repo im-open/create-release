@@ -7,20 +7,20 @@ This action has the option of uploading a single asset to the release.  If more 
 This action also has the option of deleting the release if it already exists.  If a workflow tries to create a release that already exists it will fail which may happen when a workflow is re-run.  This functionality is also provided in the [im-open/delete-release-by-tag] action if a release needs to be deleted before the release is created.
 
 ## Inputs
-| Parameter                 | Is Required                      | Description                                                                                                                                       |
-| ------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `github-token`            | true                             | A token with permission to create and delete releases.  Generally secrets.GITHUB_TOKEN.                                                           |
-| `tag-name`                | true                             | The name of the tag.                                                                                                                              |
-| `release-name`            | false                            | The name of the release. Defaults to the tag name if not provided.                                                                                |
-| `commitish`               | false                            | Any branch or commit SHA the Git tag is created from. <br/>Defaults: <br/>• `pull_request` triggers: Head ref<br/>• Other triggers: `context.sha` |
-| `body`                    | false                            | Text describing the contents of the release.                                                                                                      |
-| `body-path`               | false                            | Path to file with information about the release.                                                                                                  |
-| `draft`                   | false                            | Flag indicating whether to create a draft (unpublished) release or a published one.<br/>Accepted Values: `true\|false`.  Default: `false`.        |
-| `prerelease`              | false                            | Flag indicating whether this release is a pre-release or a full release.<br/>Accepted Values: `true\|false`.  Default: `false`.                   |
-| `delete-existing-release` | false                            | Flag indicating whether to delete then re-create a release if it already exists.<br/>Accepted Values: `true\|false`.  Default: `false`.           |
-| `asset-path`              | Required when uploading an asset | The path to the asset you want to upload.  Required when uploading an asset.                                                                      |
-| `asset-name`              | Required when uploading an asset | The name of the asset you want to upload.   Required when uploading an asset.                                                                     |
-| `asset-content-type`      | Required when uploading an asset | The content-type of the asset you want to upload. See the [supported Media Types].  Required when uploading an asset.                             |
+| Parameter                 | Is Required                      | Description                                                                                                                                                                   |
+| ------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `github-token`            | true                             | A token with permission to create and delete releases.  Generally secrets.GITHUB_TOKEN.                                                                                       |
+| `tag-name`                | true                             | The name of the tag.                                                                                                                                                          |
+| `release-name`            | false                            | The name of the release. Defaults to the tag name if not provided.                                                                                                            |
+| `commitish`               | false                            | Any branch or commit SHA the Git tag is created from. <br/><br/>Defaults: <br/>• `pull_request` triggers: `context.pull_request.head.sha`<br/>• Other triggers: `context.sha` |
+| `body`                    | false                            | Text describing the contents of the release.                                                                                                                                  |
+| `body-path`               | false                            | Path to file with information about the release.                                                                                                                              |
+| `draft`                   | false                            | Flag indicating whether to create a draft (unpublished) release or a published one.<br/>Accepted Values: `true\|false`.  Default: `false`.                                    |
+| `prerelease`              | false                            | Flag indicating whether this release is a pre-release or a full release.<br/>Accepted Values: `true\|false`.  Default: `false`.                                               |
+| `delete-existing-release` | false                            | Flag indicating whether to delete then re-create a release if it already exists.<br/>Accepted Values: `true\|false`.  Default: `false`.                                       |
+| `asset-path`              | Required when uploading an asset | The path to the asset you want to upload.  Required when uploading an asset.                                                                                                  |
+| `asset-name`              | Required when uploading an asset | The name of the asset you want to upload.   Required when uploading an asset.                                                                                                 |
+| `asset-content-type`      | Required when uploading an asset | The content-type of the asset you want to upload. See the [supported Media Types].  Required when uploading an asset.                                                         |
 
 ## Outputs
 | Output                       | Description                                                       |
@@ -51,7 +51,7 @@ jobs:
 
       - name: Calculate next version
         id: version
-        uses: im-open/git-version-lite@v1.0.0
+        uses: im-open/git-version-lite@v2.0.0
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
@@ -64,7 +64,7 @@ jobs:
 
       - name: Create Pre-release
         id: create_release
-        uses: im-open/create-release@v1.0.0
+        uses: im-open/create-release@v2.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}

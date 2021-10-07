@@ -24,22 +24,17 @@ const tag = tagInput.replace('refs/tags/', '');
 const releaseName = releaseNameInput.replace('refs/tags/', '');
 const github = new GitHub(token);
 
-console.log(`Current context.sha: ${context.sha}`);
-console.log(`Current PR sha: ${context.payload.pull_request.head.sha}`);
-console.log('context:');
-console.log(context);
-console.log('\n\n');
-console.log('context pr head:');
-console.log(context.payload.pull_request.head);
-console.log('\n\n');
-
 let commitish = core.getInput('commitish');
-if (!commitish && context.eventName == 'pull_request') {
-  core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
-  commitish = context.payload.pull_request.head.sha;
-} else if (!commitish) {
-  core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
-  commitish = context.sha;
+if (!commitish) {
+  if (context.eventName == 'pull_request') {
+    core.info(`Current github context.sha: ${context.sha}`);
+    core.info(`Current github context.PR.head.sha: ${context.payload.pull_request.head.sha}`);
+    core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
+    commitish = context.payload.pull_request.head.sha;
+  } else {
+    core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
+    commitish = context.sha;
+  }
 } else {
   commitish = commitish.replace('refs/heads/', '').replace('refs/tags/', '');
   core.info(`The commitish arg was provided, using ${commitish}`);
