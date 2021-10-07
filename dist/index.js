@@ -81,11 +81,7 @@ var require_command = __commonJS({
       }
     };
     function escapeData(s) {
-      return utils_1
-        .toCommandValue(s)
-        .replace(/%/g, '%25')
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A');
+      return utils_1.toCommandValue(s).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
     }
     function escapeProperty(s) {
       return utils_1
@@ -401,9 +397,7 @@ var require_dist_node2 = __commonJS({
           .filter(preview => !mergedOptions.mediaType.previews.includes(preview))
           .concat(mergedOptions.mediaType.previews);
       }
-      mergedOptions.mediaType.previews = mergedOptions.mediaType.previews.map(preview =>
-        preview.replace(/-preview/, '')
-      );
+      mergedOptions.mediaType.previews = mergedOptions.mediaType.previews.map(preview => preview.replace(/-preview/, ''));
       return mergedOptions;
     }
     function addQueryParameters(url, parameters) {
@@ -461,8 +455,7 @@ var require_dist_node2 = __commonJS({
       });
     }
     function encodeValue(operator, value, key) {
-      value =
-        operator === '+' || operator === '#' ? encodeReserved(value) : encodeUnreserved(value);
+      value = operator === '+' || operator === '#' ? encodeReserved(value) : encodeUnreserved(value);
       if (key) {
         return encodeUnreserved(key) + '=' + value;
       } else {
@@ -572,14 +565,7 @@ var require_dist_node2 = __commonJS({
       let url = (options.url || '/').replace(/:([a-z]\w+)/g, '{$1}');
       let headers = Object.assign({}, options.headers);
       let body2;
-      let parameters = omit(options, [
-        'method',
-        'baseUrl',
-        'url',
-        'headers',
-        'request',
-        'mediaType'
-      ]);
+      let parameters = omit(options, ['method', 'baseUrl', 'url', 'headers', 'request', 'mediaType']);
       const urlVariableNames = extractUrlVariableNames(url);
       url = parseUrl(url).expand(parameters);
       if (!/^http/.test(url)) {
@@ -863,11 +849,7 @@ var require_lib = __commonJS({
           const error =
             err.name === 'AbortError'
               ? err
-              : new FetchError(
-                  `Invalid response body while trying to fetch ${_this.url}: ${err.message}`,
-                  'system',
-                  err
-                );
+              : new FetchError(`Invalid response body while trying to fetch ${_this.url}: ${err.message}`, 'system', err);
           _this[INTERNALS].error = error;
         });
       }
@@ -904,10 +886,7 @@ var require_lib = __commonJS({
             return JSON.parse(buffer.toString());
           } catch (err) {
             return Body.Promise.reject(
-              new FetchError(
-                `invalid json response body at ${_this2.url} reason: ${err.message}`,
-                'invalid-json'
-              )
+              new FetchError(`invalid json response body at ${_this2.url} reason: ${err.message}`, 'invalid-json')
             );
           }
         });
@@ -974,10 +953,7 @@ var require_lib = __commonJS({
           resTimeout = setTimeout(function () {
             abort = true;
             reject(
-              new FetchError(
-                `Response timeout while trying to fetch ${_this4.url} (over ${_this4.timeout}ms)`,
-                'body-timeout'
-              )
+              new FetchError(`Response timeout while trying to fetch ${_this4.url} (over ${_this4.timeout}ms)`, 'body-timeout')
             );
           }, _this4.timeout);
         }
@@ -986,13 +962,7 @@ var require_lib = __commonJS({
             abort = true;
             reject(err);
           } else {
-            reject(
-              new FetchError(
-                `Invalid response body while trying to fetch ${_this4.url}: ${err.message}`,
-                'system',
-                err
-              )
-            );
+            reject(new FetchError(`Invalid response body while trying to fetch ${_this4.url}: ${err.message}`, 'system', err));
           }
         });
         body2.on('data', function (chunk) {
@@ -1001,9 +971,7 @@ var require_lib = __commonJS({
           }
           if (_this4.size && accumBytes + chunk.length > _this4.size) {
             abort = true;
-            reject(
-              new FetchError(`content size at ${_this4.url} over limit: ${_this4.size}`, 'max-size')
-            );
+            reject(new FetchError(`content size at ${_this4.url} over limit: ${_this4.size}`, 'max-size'));
             return;
           }
           accumBytes += chunk.length;
@@ -1017,22 +985,14 @@ var require_lib = __commonJS({
           try {
             resolve(Buffer.concat(accum, accumBytes));
           } catch (err) {
-            reject(
-              new FetchError(
-                `Could not create Buffer from response body for ${_this4.url}: ${err.message}`,
-                'system',
-                err
-              )
-            );
+            reject(new FetchError(`Could not create Buffer from response body for ${_this4.url}: ${err.message}`, 'system', err));
           }
         });
       });
     }
     function convertBody(buffer, headers) {
       if (typeof convert !== 'function') {
-        throw new Error(
-          'The package `encoding` must be installed to use the textConverted() function'
-        );
+        throw new Error('The package `encoding` must be installed to use the textConverted() function');
       }
       const ct = headers.get('content-type');
       let charset = 'utf-8';
@@ -1510,18 +1470,10 @@ var require_lib = __commonJS({
         }
         let method = init.method || input.method || 'GET';
         method = method.toUpperCase();
-        if (
-          (init.body != null || (isRequest(input) && input.body !== null)) &&
-          (method === 'GET' || method === 'HEAD')
-        ) {
+        if ((init.body != null || (isRequest(input) && input.body !== null)) && (method === 'GET' || method === 'HEAD')) {
           throw new TypeError('Request with GET/HEAD method cannot have body');
         }
-        let inputBody =
-          init.body != null
-            ? init.body
-            : isRequest(input) && input.body !== null
-            ? clone(input)
-            : null;
+        let inputBody = init.body != null ? init.body : isRequest(input) && input.body !== null ? clone(input) : null;
         Body.call(this, inputBody, {
           timeout: init.timeout || input.timeout || 0,
           size: init.size || input.size || 0
@@ -1545,14 +1497,8 @@ var require_lib = __commonJS({
           parsedURL,
           signal
         };
-        this.follow =
-          init.follow !== void 0 ? init.follow : input.follow !== void 0 ? input.follow : 20;
-        this.compress =
-          init.compress !== void 0
-            ? init.compress
-            : input.compress !== void 0
-            ? input.compress
-            : true;
+        this.follow = init.follow !== void 0 ? init.follow : input.follow !== void 0 ? input.follow : 20;
+        this.compress = init.compress !== void 0 ? init.compress : input.compress !== void 0 ? input.compress : true;
         this.counter = init.counter || input.counter || 0;
         this.agent = init.agent || input.agent;
       }
@@ -1602,14 +1548,8 @@ var require_lib = __commonJS({
       if (!/^https?:$/.test(parsedURL.protocol)) {
         throw new TypeError('Only HTTP(S) protocols are supported');
       }
-      if (
-        request.signal &&
-        request.body instanceof Stream.Readable &&
-        !streamDestructionSupported
-      ) {
-        throw new Error(
-          'Cancellation of streamed requests with AbortSignal is not supported in node < 8'
-        );
+      if (request.signal && request.body instanceof Stream.Readable && !streamDestructionSupported) {
+        throw new Error('Cancellation of streamed requests with AbortSignal is not supported in node < 8');
       }
       let contentLengthValue = null;
       if (request.body == null && /^(POST|PUT)$/i.test(request.method)) {
@@ -1701,13 +1641,7 @@ var require_lib = __commonJS({
           });
         }
         req.on('error', function (err) {
-          reject(
-            new FetchError(
-              `request to ${request.url} failed, reason: ${err.message}`,
-              'system',
-              err
-            )
-          );
+          reject(new FetchError(`request to ${request.url} failed, reason: ${err.message}`, 'system', err));
           finalize();
         });
         req.on('response', function (res) {
@@ -1740,9 +1674,7 @@ var require_lib = __commonJS({
                   break;
                 }
                 if (request.counter >= request.follow) {
-                  reject(
-                    new FetchError(`maximum redirect reached at: ${request.url}`, 'max-redirect')
-                  );
+                  reject(new FetchError(`maximum redirect reached at: ${request.url}`, 'max-redirect'));
                   finalize();
                   return;
                 }
@@ -1759,19 +1691,11 @@ var require_lib = __commonJS({
                   size: request.size
                 };
                 if (res.statusCode !== 303 && request.body && getTotalBytes(request) === null) {
-                  reject(
-                    new FetchError(
-                      'Cannot follow redirect with body being a readable stream',
-                      'unsupported-redirect'
-                    )
-                  );
+                  reject(new FetchError('Cannot follow redirect with body being a readable stream', 'unsupported-redirect'));
                   finalize();
                   return;
                 }
-                if (
-                  res.statusCode === 303 ||
-                  ((res.statusCode === 301 || res.statusCode === 302) && request.method === 'POST')
-                ) {
+                if (res.statusCode === 303 || ((res.statusCode === 301 || res.statusCode === 302) && request.method === 'POST')) {
                   requestOpts.method = 'GET';
                   requestOpts.body = void 0;
                   requestOpts.headers.delete('content-length');
@@ -1985,20 +1909,14 @@ var require_dist_node5 = __commonJS({
         this.request = requestCopy;
         Object.defineProperty(this, 'code', {
           get() {
-            logOnceCode(
-              new deprecation.Deprecation(
-                '[@octokit/request-error] `error.code` is deprecated, use `error.status`.'
-              )
-            );
+            logOnceCode(new deprecation.Deprecation('[@octokit/request-error] `error.code` is deprecated, use `error.status`.'));
             return statusCode;
           }
         });
         Object.defineProperty(this, 'headers', {
           get() {
             logOnceHeaders(
-              new deprecation.Deprecation(
-                '[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`.'
-              )
+              new deprecation.Deprecation('[@octokit/request-error] `error.headers` is deprecated, use `error.response.headers`.')
             );
             return headers || {};
           }
@@ -2027,8 +1945,7 @@ var require_dist_node6 = __commonJS({
       return response.arrayBuffer();
     }
     function fetchWrapper(requestOptions) {
-      const log =
-        requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
+      const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
       if (isPlainObject.isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
         requestOptions.body = JSON.stringify(requestOptions.body);
       }
@@ -2289,11 +2206,7 @@ var require_mode = __commonJS({
       var g = parseInt('010', 8);
       var o = parseInt('001', 8);
       var ug = u | g;
-      var ret =
-        mod & o ||
-        (mod & g && gid === myGid) ||
-        (mod & u && uid === myUid) ||
-        (mod & ug && myUid === 0);
+      var ret = mod & o || (mod & g && gid === myGid) || (mod & u && uid === myUid) || (mod & ug && myUid === 0);
       return ret;
     }
   }
@@ -2359,10 +2272,7 @@ var require_which = __commonJS({
   'node_modules/which/which.js'(exports2, module2) {
     module2.exports = which;
     which.sync = whichSync;
-    var isWindows =
-      process.platform === 'win32' ||
-      process.env.OSTYPE === 'cygwin' ||
-      process.env.OSTYPE === 'msys';
+    var isWindows = process.platform === 'win32' || process.env.OSTYPE === 'cygwin' || process.env.OSTYPE === 'msys';
     var path = require('path');
     var COLON = isWindows ? ';' : ':';
     var isexe = require_isexe();
@@ -2406,8 +2316,7 @@ var require_which = __commonJS({
           else return cb(getNotFoundError(cmd));
         }
         var pathPart = pathEnv[i];
-        if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
-          pathPart = pathPart.slice(1, -1);
+        if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"') pathPart = pathPart.slice(1, -1);
         var p = path.join(pathPart, cmd);
         if (!pathPart && /^\.[\\\/]/.test(cmd)) {
           p = cmd.slice(0, 2) + p;
@@ -2434,8 +2343,7 @@ var require_which = __commonJS({
       var found = [];
       for (var i = 0, l = pathEnv.length; i < l; i++) {
         var pathPart = pathEnv[i];
-        if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
-          pathPart = pathPart.slice(1, -1);
+        if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"') pathPart = pathPart.slice(1, -1);
         var p = path.join(pathPart, cmd);
         if (!pathPart && /^\.[\\\/]/.test(cmd)) {
           p = cmd.slice(0, 2) + p;
@@ -2595,12 +2503,7 @@ var require_semver = __commonJS({
   'node_modules/semver/semver.js'(exports2, module2) {
     exports2 = module2.exports = SemVer;
     var debug;
-    if (
-      typeof process === 'object' &&
-      process.env &&
-      process.env.NODE_DEBUG &&
-      /\bsemver\b/i.test(process.env.NODE_DEBUG)
-    ) {
+    if (typeof process === 'object' && process.env && process.env.NODE_DEBUG && /\bsemver\b/i.test(process.env.NODE_DEBUG)) {
       debug = function () {
         var args = Array.prototype.slice.call(arguments, 0);
         args.unshift('SEMVER');
@@ -2623,39 +2526,18 @@ var require_semver = __commonJS({
     var NONNUMERICIDENTIFIER = R++;
     src[NONNUMERICIDENTIFIER] = '\\d*[a-zA-Z-][a-zA-Z0-9-]*';
     var MAINVERSION = R++;
-    src[MAINVERSION] =
-      '(' +
-      src[NUMERICIDENTIFIER] +
-      ')\\.(' +
-      src[NUMERICIDENTIFIER] +
-      ')\\.(' +
-      src[NUMERICIDENTIFIER] +
-      ')';
+    src[MAINVERSION] = '(' + src[NUMERICIDENTIFIER] + ')\\.(' + src[NUMERICIDENTIFIER] + ')\\.(' + src[NUMERICIDENTIFIER] + ')';
     var MAINVERSIONLOOSE = R++;
     src[MAINVERSIONLOOSE] =
-      '(' +
-      src[NUMERICIDENTIFIERLOOSE] +
-      ')\\.(' +
-      src[NUMERICIDENTIFIERLOOSE] +
-      ')\\.(' +
-      src[NUMERICIDENTIFIERLOOSE] +
-      ')';
+      '(' + src[NUMERICIDENTIFIERLOOSE] + ')\\.(' + src[NUMERICIDENTIFIERLOOSE] + ')\\.(' + src[NUMERICIDENTIFIERLOOSE] + ')';
     var PRERELEASEIDENTIFIER = R++;
-    src[PRERELEASEIDENTIFIER] =
-      '(?:' + src[NUMERICIDENTIFIER] + '|' + src[NONNUMERICIDENTIFIER] + ')';
+    src[PRERELEASEIDENTIFIER] = '(?:' + src[NUMERICIDENTIFIER] + '|' + src[NONNUMERICIDENTIFIER] + ')';
     var PRERELEASEIDENTIFIERLOOSE = R++;
-    src[PRERELEASEIDENTIFIERLOOSE] =
-      '(?:' + src[NUMERICIDENTIFIERLOOSE] + '|' + src[NONNUMERICIDENTIFIER] + ')';
+    src[PRERELEASEIDENTIFIERLOOSE] = '(?:' + src[NUMERICIDENTIFIERLOOSE] + '|' + src[NONNUMERICIDENTIFIER] + ')';
     var PRERELEASE = R++;
-    src[PRERELEASE] =
-      '(?:-(' + src[PRERELEASEIDENTIFIER] + '(?:\\.' + src[PRERELEASEIDENTIFIER] + ')*))';
+    src[PRERELEASE] = '(?:-(' + src[PRERELEASEIDENTIFIER] + '(?:\\.' + src[PRERELEASEIDENTIFIER] + ')*))';
     var PRERELEASELOOSE = R++;
-    src[PRERELEASELOOSE] =
-      '(?:-?(' +
-      src[PRERELEASEIDENTIFIERLOOSE] +
-      '(?:\\.' +
-      src[PRERELEASEIDENTIFIERLOOSE] +
-      ')*))';
+    src[PRERELEASELOOSE] = '(?:-?(' + src[PRERELEASEIDENTIFIERLOOSE] + '(?:\\.' + src[PRERELEASEIDENTIFIERLOOSE] + ')*))';
     var BUILDIDENTIFIER = R++;
     src[BUILDIDENTIFIER] = '[0-9A-Za-z-]+';
     var BUILD = R++;
@@ -2663,8 +2545,7 @@ var require_semver = __commonJS({
     var FULL = R++;
     var FULLPLAIN = 'v?' + src[MAINVERSION] + src[PRERELEASE] + '?' + src[BUILD] + '?';
     src[FULL] = '^' + FULLPLAIN + '$';
-    var LOOSEPLAIN =
-      '[v=\\s]*' + src[MAINVERSIONLOOSE] + src[PRERELEASELOOSE] + '?' + src[BUILD] + '?';
+    var LOOSEPLAIN = '[v=\\s]*' + src[MAINVERSIONLOOSE] + src[PRERELEASELOOSE] + '?' + src[BUILD] + '?';
     var LOOSE = R++;
     src[LOOSE] = '^' + LOOSEPLAIN + '$';
     var GTLT = R++;
@@ -2737,15 +2618,13 @@ var require_semver = __commonJS({
     var COMPARATOR = R++;
     src[COMPARATOR] = '^' + src[GTLT] + '\\s*(' + FULLPLAIN + ')$|^$';
     var COMPARATORTRIM = R++;
-    src[COMPARATORTRIM] =
-      '(\\s*)' + src[GTLT] + '\\s*(' + LOOSEPLAIN + '|' + src[XRANGEPLAIN] + ')';
+    src[COMPARATORTRIM] = '(\\s*)' + src[GTLT] + '\\s*(' + LOOSEPLAIN + '|' + src[XRANGEPLAIN] + ')';
     re[COMPARATORTRIM] = new RegExp(src[COMPARATORTRIM], 'g');
     var comparatorTrimReplace = '$1$2$3';
     var HYPHENRANGE = R++;
     src[HYPHENRANGE] = '^\\s*(' + src[XRANGEPLAIN] + ')\\s+-\\s+(' + src[XRANGEPLAIN] + ')\\s*$';
     var HYPHENRANGELOOSE = R++;
-    src[HYPHENRANGELOOSE] =
-      '^\\s*(' + src[XRANGEPLAINLOOSE] + ')\\s+-\\s+(' + src[XRANGEPLAINLOOSE] + ')\\s*$';
+    src[HYPHENRANGELOOSE] = '^\\s*(' + src[XRANGEPLAINLOOSE] + ')\\s+-\\s+(' + src[XRANGEPLAINLOOSE] + ')\\s*$';
     var STAR = R++;
     src[STAR] = '(<|>)?=?\\s*\\*';
     for (var i = 0; i < R; i++) {
@@ -3201,15 +3080,12 @@ var require_semver = __commonJS({
         return satisfies(comp.semver, rangeTmp, options);
       }
       var sameDirectionIncreasing =
-        (this.operator === '>=' || this.operator === '>') &&
-        (comp.operator === '>=' || comp.operator === '>');
+        (this.operator === '>=' || this.operator === '>') && (comp.operator === '>=' || comp.operator === '>');
       var sameDirectionDecreasing =
-        (this.operator === '<=' || this.operator === '<') &&
-        (comp.operator === '<=' || comp.operator === '<');
+        (this.operator === '<=' || this.operator === '<') && (comp.operator === '<=' || comp.operator === '<');
       var sameSemVer = this.semver.version === comp.semver.version;
       var differentDirectionsInclusive =
-        (this.operator === '>=' || this.operator === '<=') &&
-        (comp.operator === '>=' || comp.operator === '<=');
+        (this.operator === '>=' || this.operator === '<=') && (comp.operator === '>=' || comp.operator === '<=');
       var oppositeDirectionsLessThan =
         cmp(this.semver, '<', comp.semver, options) &&
         (this.operator === '>=' || this.operator === '>') &&
@@ -3235,10 +3111,7 @@ var require_semver = __commonJS({
         };
       }
       if (range instanceof Range) {
-        if (
-          range.loose === !!options.loose &&
-          range.includePrerelease === !!options.includePrerelease
-        ) {
+        if (range.loose === !!options.loose && range.includePrerelease === !!options.includePrerelease) {
           return range;
         } else {
           return new Range(range.raw, options);
@@ -3546,11 +3419,7 @@ var require_semver = __commonJS({
           }
           if (set[i2].semver.prerelease.length > 0) {
             var allowed = set[i2].semver;
-            if (
-              allowed.major === version.major &&
-              allowed.minor === version.minor &&
-              allowed.patch === version.patch
-            ) {
+            if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
               return true;
             }
           }
@@ -3759,9 +3628,7 @@ var require_parse = __commonJS({
     var isWin = process.platform === 'win32';
     var isExecutableRegExp = /\.(?:com|exe)$/i;
     var isCmdShimRegExp = /node_modules[\\/].bin[\\/][^\\/]+\.cmd$/i;
-    var supportsShellOption =
-      niceTry(() => semver.satisfies(process.version, '^4.8.0 || ^5.7.0 || >= 6.0.0', true)) ||
-      false;
+    var supportsShellOption = niceTry(() => semver.satisfies(process.version, '^4.8.0 || ^5.7.0 || >= 6.0.0', true)) || false;
     function detectShebang(parsed) {
       parsed.file = resolveCommand(parsed);
       const shebang = parsed.file && readShebang(parsed.file);
@@ -3796,10 +3663,7 @@ var require_parse = __commonJS({
       }
       const shellCommand = [parsed.command].concat(parsed.args).join(' ');
       if (isWin) {
-        parsed.command =
-          typeof parsed.options.shell === 'string'
-            ? parsed.options.shell
-            : process.env.comspec || 'cmd.exe';
+        parsed.command = typeof parsed.options.shell === 'string' ? parsed.options.shell : process.env.comspec || 'cmd.exe';
         parsed.args = ['/d', '/s', '/c', `"${shellCommand}"`];
         parsed.options.windowsVerbatimArguments = true;
       } else {
@@ -4000,11 +3864,7 @@ var require_is_stream = __commonJS({
       return isStream.writable(stream) && isStream.readable(stream);
     };
     isStream.transform = function (stream) {
-      return (
-        isStream.duplex(stream) &&
-        typeof stream._transform === 'function' &&
-        typeof stream._transformState === 'object'
-      );
+      return isStream.duplex(stream) && typeof stream._transform === 'function' && typeof stream._transformState === 'object';
     };
   }
 });
@@ -4051,10 +3911,8 @@ var require_end_of_stream = __commonJS({
       };
       var onclosenexttick = function () {
         if (cancelled) return;
-        if (readable && !(rs && rs.ended && !rs.destroyed))
-          return callback.call(stream, new Error('premature close'));
-        if (writable && !(ws && ws.ended && !ws.destroyed))
-          return callback.call(stream, new Error('premature close'));
+        if (readable && !(rs && rs.ended && !rs.destroyed)) return callback.call(stream, new Error('premature close'));
+        if (writable && !(ws && ws.ended && !ws.destroyed)) return callback.call(stream, new Error('premature close'));
       };
       var onrequest = function () {
         stream.req.on('finish', onfinish);
@@ -4106,11 +3964,7 @@ var require_pump = __commonJS({
     var isFS = function (stream) {
       if (!ancient) return false;
       if (!fs2) return false;
-      return (
-        (stream instanceof (fs2.ReadStream || noop) ||
-          stream instanceof (fs2.WriteStream || noop)) &&
-        isFn(stream.close)
-      );
+      return (stream instanceof (fs2.ReadStream || noop) || stream instanceof (fs2.WriteStream || noop)) && isFn(stream.close);
     };
     var isRequest = function (stream) {
       return stream.setHeader && isFn(stream.abort);
@@ -4252,10 +4106,8 @@ var require_get_stream = __commonJS({
       }).then(() => stream.getBufferedValue());
     }
     module2.exports = getStream;
-    module2.exports.buffer = (stream, options) =>
-      getStream(stream, Object.assign({}, options, { encoding: 'buffer' }));
-    module2.exports.array = (stream, options) =>
-      getStream(stream, Object.assign({}, options, { array: true }));
+    module2.exports.buffer = (stream, options) => getStream(stream, Object.assign({}, options, { encoding: 'buffer' }));
+    module2.exports.array = (stream, options) => getStream(stream, Object.assign({}, options, { array: true }));
     module2.exports.MaxBufferError = MaxBufferError;
   }
 });
@@ -4287,16 +4139,7 @@ var require_signals = __commonJS({
   'node_modules/signal-exit/signals.js'(exports2, module2) {
     module2.exports = ['SIGABRT', 'SIGALRM', 'SIGHUP', 'SIGINT', 'SIGTERM'];
     if (process.platform !== 'win32') {
-      module2.exports.push(
-        'SIGVTALRM',
-        'SIGXCPU',
-        'SIGXFSZ',
-        'SIGUSR2',
-        'SIGTRAP',
-        'SIGSYS',
-        'SIGQUIT',
-        'SIGIOT'
-      );
+      module2.exports.push('SIGVTALRM', 'SIGXCPU', 'SIGXFSZ', 'SIGUSR2', 'SIGTRAP', 'SIGSYS', 'SIGQUIT', 'SIGIOT');
     }
     if (process.platform === 'linux') {
       module2.exports.push('SIGIO', 'SIGPOLL', 'SIGPWR', 'SIGSTKFLT', 'SIGUNUSED');
@@ -4472,9 +4315,7 @@ var require_stdio = __commonJS({
       }
       if (opts.stdio && hasAlias(opts)) {
         throw new Error(
-          `It's not possible to provide \`stdio\` in combination with one of ${alias
-            .map(x => `\`${x}\``)
-            .join(', ')}`
+          `It's not possible to provide \`stdio\` in combination with one of ${alias.map(x => `\`${x}\``).join(', ')}`
         );
       }
       if (typeof opts.stdio === 'string') {
@@ -4482,9 +4323,7 @@ var require_stdio = __commonJS({
       }
       const stdio = opts.stdio || [];
       if (!Array.isArray(stdio)) {
-        throw new TypeError(
-          `Expected \`stdio\` to be of type \`string\` or \`Array\`, got \`${typeof stdio}\``
-        );
+        throw new TypeError(`Expected \`stdio\` to be of type \`string\` or \`Array\`, got \`${typeof stdio}\``);
       }
       const result = [];
       const len = Math.max(stdio.length, alias.length);
@@ -4836,9 +4675,7 @@ var require_windows_release = __commonJS({
         try {
           stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
         } catch (_) {
-          stdout =
-            execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption'])
-              .stdout || '';
+          stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
         }
         const year = (stdout.match(/2008|2012|2016|2019/) || [])[0];
         if (year) {
@@ -4988,8 +4825,7 @@ var require_package = __commonJS({
       },
       files: ['lib'],
       _resolved: 'https://registry.npmjs.org/@octokit/graphql/-/graphql-2.1.3.tgz',
-      _integrity:
-        'sha512-XoXJqL2ondwdnMIW3wtqJWEwcBfKk37jO/rYkoxNPEVeLBDGsGO1TCWggrAlq3keGt/O+C/7VepXnukUxwt5vA==',
+      _integrity: 'sha512-XoXJqL2ondwdnMIW3wtqJWEwcBfKk37jO/rYkoxNPEVeLBDGsGO1TCWggrAlq3keGt/O+C/7VepXnukUxwt5vA==',
       _from: '@octokit/graphql@2.1.3'
     };
   }
@@ -5094,15 +4930,11 @@ var require_dist_node7 = __commonJS({
         const path = requestOptions.url.replace(options.baseUrl, '');
         return request(options)
           .then(response => {
-            octokit.log.info(
-              `${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`
-            );
+            octokit.log.info(`${requestOptions.method} ${path} - ${response.status} in ${Date.now() - start}ms`);
             return response;
           })
           .catch(error => {
-            octokit.log.info(
-              `${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`
-            );
+            octokit.log.info(`${requestOptions.method} ${path} - ${error.status} in ${Date.now() - start}ms`);
             throw error;
           });
       });
@@ -6290,8 +6122,7 @@ var require_dist_node8 = __commonJS({
         },
         deleteInstallation: {
           headers: {
-            accept:
-              'application/vnd.github.gambit-preview+json,application/vnd.github.machine-man-preview+json'
+            accept: 'application/vnd.github.gambit-preview+json,application/vnd.github.machine-man-preview+json'
           },
           method: 'DELETE',
           params: {
@@ -6319,8 +6150,7 @@ var require_dist_node8 = __commonJS({
           url: '/applications/:client_id/token'
         },
         findOrgInstallation: {
-          deprecated:
-            'octokit.apps.findOrgInstallation() has been renamed to octokit.apps.getOrgInstallation() (2019-04-10)',
+          deprecated: 'octokit.apps.findOrgInstallation() has been renamed to octokit.apps.getOrgInstallation() (2019-04-10)',
           headers: {
             accept: 'application/vnd.github.machine-man-preview+json'
           },
@@ -6334,8 +6164,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/installation'
         },
         findRepoInstallation: {
-          deprecated:
-            'octokit.apps.findRepoInstallation() has been renamed to octokit.apps.getRepoInstallation() (2019-04-10)',
+          deprecated: 'octokit.apps.findRepoInstallation() has been renamed to octokit.apps.getRepoInstallation() (2019-04-10)',
           headers: {
             accept: 'application/vnd.github.machine-man-preview+json'
           },
@@ -6353,8 +6182,7 @@ var require_dist_node8 = __commonJS({
           url: '/repos/:owner/:repo/installation'
         },
         findUserInstallation: {
-          deprecated:
-            'octokit.apps.findUserInstallation() has been renamed to octokit.apps.getUserInstallation() (2019-04-10)',
+          deprecated: 'octokit.apps.findUserInstallation() has been renamed to octokit.apps.getUserInstallation() (2019-04-10)',
           headers: {
             accept: 'application/vnd.github.machine-man-preview+json'
           },
@@ -9087,8 +8915,7 @@ var require_dist_node8 = __commonJS({
           url: '/repos/:owner/:repo/license'
         },
         list: {
-          deprecated:
-            'octokit.licenses.list() has been renamed to octokit.licenses.listCommonlyUsed() (2019-03-05)',
+          deprecated: 'octokit.licenses.list() has been renamed to octokit.licenses.listCommonlyUsed() (2019-03-05)',
           method: 'GET',
           params: {},
           url: '/licenses'
@@ -11047,8 +10874,7 @@ var require_dist_node8 = __commonJS({
           url: '/repos/:owner/:repo/pulls/:pull_number/comments'
         },
         createCommentReply: {
-          deprecated:
-            'octokit.pulls.createCommentReply() has been renamed to octokit.pulls.createComment() (2019-09-09)',
+          deprecated: 'octokit.pulls.createCommentReply() has been renamed to octokit.pulls.createComment() (2019-09-09)',
           method: 'POST',
           params: {
             body: {
@@ -12858,8 +12684,7 @@ var require_dist_node8 = __commonJS({
           url: '/repos/:owner/:repo/dispatches'
         },
         createFile: {
-          deprecated:
-            'octokit.repos.createFile() has been renamed to octokit.repos.createOrUpdateFile() (2019-06-07)',
+          deprecated: 'octokit.repos.createFile() has been renamed to octokit.repos.createOrUpdateFile() (2019-06-07)',
           method: 'PUT',
           params: {
             author: {
@@ -15618,8 +15443,7 @@ var require_dist_node8 = __commonJS({
           url: '/repos/:owner/:repo/comments/:comment_id'
         },
         updateFile: {
-          deprecated:
-            'octokit.repos.updateFile() has been renamed to octokit.repos.createOrUpdateFile() (2019-06-07)',
+          deprecated: 'octokit.repos.updateFile() has been renamed to octokit.repos.createOrUpdateFile() (2019-06-07)',
           method: 'PUT',
           params: {
             author: {
@@ -15975,8 +15799,7 @@ var require_dist_node8 = __commonJS({
           url: '/search/commits'
         },
         issues: {
-          deprecated:
-            'octokit.search.issues() has been renamed to octokit.search.issuesAndPullRequests() (2018-12-27)',
+          deprecated: 'octokit.search.issues() has been renamed to octokit.search.issuesAndPullRequests() (2018-12-27)',
           method: 'GET',
           params: {
             order: {
@@ -16131,8 +15954,7 @@ var require_dist_node8 = __commonJS({
       },
       teams: {
         addMember: {
-          deprecated:
-            'octokit.teams.addMember() has been renamed to octokit.teams.addMemberLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.addMember() has been renamed to octokit.teams.addMemberLegacy() (2020-01-16)',
           method: 'PUT',
           params: {
             team_id: {
@@ -16296,8 +16118,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/projects/:project_id'
         },
         addOrUpdateRepo: {
-          deprecated:
-            'octokit.teams.addOrUpdateRepo() has been renamed to octokit.teams.addOrUpdateRepoLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.addOrUpdateRepo() has been renamed to octokit.teams.addOrUpdateRepoLegacy() (2020-01-16)',
           method: 'PUT',
           params: {
             owner: {
@@ -16370,8 +16191,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/repos/:owner/:repo'
         },
         checkManagesRepo: {
-          deprecated:
-            'octokit.teams.checkManagesRepo() has been renamed to octokit.teams.checkManagesRepoLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.checkManagesRepo() has been renamed to octokit.teams.checkManagesRepoLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             owner: {
@@ -16466,8 +16286,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/teams'
         },
         createDiscussion: {
-          deprecated:
-            'octokit.teams.createDiscussion() has been renamed to octokit.teams.createDiscussionLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.createDiscussion() has been renamed to octokit.teams.createDiscussionLegacy() (2020-01-16)',
           method: 'POST',
           params: {
             body: {
@@ -16599,8 +16418,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/discussions'
         },
         delete: {
-          deprecated:
-            'octokit.teams.delete() has been renamed to octokit.teams.deleteLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.delete() has been renamed to octokit.teams.deleteLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             team_id: {
@@ -16611,8 +16429,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id'
         },
         deleteDiscussion: {
-          deprecated:
-            'octokit.teams.deleteDiscussion() has been renamed to octokit.teams.deleteDiscussionLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.deleteDiscussion() has been renamed to octokit.teams.deleteDiscussionLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             discussion_number: {
@@ -16737,8 +16554,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/teams/:team_slug'
         },
         deleteLegacy: {
-          deprecated:
-            'octokit.teams.deleteLegacy() is deprecated, see https://developer.github.com/v3/teams/#delete-team-legacy',
+          deprecated: 'octokit.teams.deleteLegacy() is deprecated, see https://developer.github.com/v3/teams/#delete-team-legacy',
           method: 'DELETE',
           params: {
             team_id: {
@@ -16749,8 +16565,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id'
         },
         get: {
-          deprecated:
-            'octokit.teams.get() has been renamed to octokit.teams.getLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.get() has been renamed to octokit.teams.getLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             team_id: {
@@ -16775,8 +16590,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/teams/:team_slug'
         },
         getDiscussion: {
-          deprecated:
-            'octokit.teams.getDiscussion() has been renamed to octokit.teams.getDiscussionLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.getDiscussion() has been renamed to octokit.teams.getDiscussionLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             discussion_number: {
@@ -16887,8 +16701,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/discussions/:discussion_number'
         },
         getLegacy: {
-          deprecated:
-            'octokit.teams.getLegacy() is deprecated, see https://developer.github.com/v3/teams/#get-team-legacy',
+          deprecated: 'octokit.teams.getLegacy() is deprecated, see https://developer.github.com/v3/teams/#get-team-legacy',
           method: 'GET',
           params: {
             team_id: {
@@ -16899,8 +16712,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id'
         },
         getMember: {
-          deprecated:
-            'octokit.teams.getMember() has been renamed to octokit.teams.getMemberLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.getMember() has been renamed to octokit.teams.getMemberLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             team_id: {
@@ -16931,8 +16743,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/members/:username'
         },
         getMembership: {
-          deprecated:
-            'octokit.teams.getMembership() has been renamed to octokit.teams.getMembershipLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.getMembership() has been renamed to octokit.teams.getMembershipLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             team_id: {
@@ -16997,8 +16808,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/teams'
         },
         listChild: {
-          deprecated:
-            'octokit.teams.listChild() has been renamed to octokit.teams.listChildLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.listChild() has been renamed to octokit.teams.listChildLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             page: {
@@ -17133,8 +16943,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/discussions/:discussion_number/comments'
         },
         listDiscussions: {
-          deprecated:
-            'octokit.teams.listDiscussions() has been renamed to octokit.teams.listDiscussionsLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.listDiscussions() has been renamed to octokit.teams.listDiscussionsLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             direction: {
@@ -17213,8 +17022,7 @@ var require_dist_node8 = __commonJS({
           url: '/user/teams'
         },
         listMembers: {
-          deprecated:
-            'octokit.teams.listMembers() has been renamed to octokit.teams.listMembersLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.listMembers() has been renamed to octokit.teams.listMembersLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             page: {
@@ -17337,8 +17145,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/invitations'
         },
         listProjects: {
-          deprecated:
-            'octokit.teams.listProjects() has been renamed to octokit.teams.listProjectsLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.listProjects() has been renamed to octokit.teams.listProjectsLegacy() (2020-01-16)',
           headers: {
             accept: 'application/vnd.github.inertia-preview+json'
           },
@@ -17402,8 +17209,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/projects'
         },
         listRepos: {
-          deprecated:
-            'octokit.teams.listRepos() has been renamed to octokit.teams.listReposLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.listRepos() has been renamed to octokit.teams.listReposLegacy() (2020-01-16)',
           method: 'GET',
           params: {
             page: {
@@ -17458,8 +17264,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/repos'
         },
         removeMember: {
-          deprecated:
-            'octokit.teams.removeMember() has been renamed to octokit.teams.removeMemberLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.removeMember() has been renamed to octokit.teams.removeMemberLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             team_id: {
@@ -17490,8 +17295,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/members/:username'
         },
         removeMembership: {
-          deprecated:
-            'octokit.teams.removeMembership() has been renamed to octokit.teams.removeMembershipLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.removeMembership() has been renamed to octokit.teams.removeMembershipLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             team_id: {
@@ -17540,8 +17344,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/memberships/:username'
         },
         removeProject: {
-          deprecated:
-            'octokit.teams.removeProject() has been renamed to octokit.teams.removeProjectLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.removeProject() has been renamed to octokit.teams.removeProjectLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             project_id: {
@@ -17590,8 +17393,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/projects/:project_id'
         },
         removeRepo: {
-          deprecated:
-            'octokit.teams.removeRepo() has been renamed to octokit.teams.removeRepoLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.removeRepo() has been renamed to octokit.teams.removeRepoLegacy() (2020-01-16)',
           method: 'DELETE',
           params: {
             owner: {
@@ -17652,8 +17454,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/repos/:owner/:repo'
         },
         reviewProject: {
-          deprecated:
-            'octokit.teams.reviewProject() has been renamed to octokit.teams.reviewProjectLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.reviewProject() has been renamed to octokit.teams.reviewProjectLegacy() (2020-01-16)',
           headers: {
             accept: 'application/vnd.github.inertia-preview+json'
           },
@@ -17711,8 +17512,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id/projects/:project_id'
         },
         update: {
-          deprecated:
-            'octokit.teams.update() has been renamed to octokit.teams.updateLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.update() has been renamed to octokit.teams.updateLegacy() (2020-01-16)',
           method: 'PATCH',
           params: {
             description: {
@@ -17741,8 +17541,7 @@ var require_dist_node8 = __commonJS({
           url: '/teams/:team_id'
         },
         updateDiscussion: {
-          deprecated:
-            'octokit.teams.updateDiscussion() has been renamed to octokit.teams.updateDiscussionLegacy() (2020-01-16)',
+          deprecated: 'octokit.teams.updateDiscussion() has been renamed to octokit.teams.updateDiscussionLegacy() (2020-01-16)',
           method: 'PATCH',
           params: {
             body: {
@@ -17915,8 +17714,7 @@ var require_dist_node8 = __commonJS({
           url: '/orgs/:org/teams/:team_slug'
         },
         updateLegacy: {
-          deprecated:
-            'octokit.teams.updateLegacy() is deprecated, see https://developer.github.com/v3/teams/#edit-team-legacy',
+          deprecated: 'octokit.teams.updateLegacy() is deprecated, see https://developer.github.com/v3/teams/#edit-team-legacy',
           method: 'PATCH',
           params: {
             description: {
@@ -18350,26 +18148,16 @@ var require_dist_node8 = __commonJS({
             validate: apiOptions.params
           };
           let request = octokit.request.defaults(endpointDefaults);
-          const hasDeprecatedParam = Object.keys(apiOptions.params || {}).find(
-            key => apiOptions.params[key].deprecated
-          );
+          const hasDeprecatedParam = Object.keys(apiOptions.params || {}).find(key => apiOptions.params[key].deprecated);
           if (hasDeprecatedParam) {
             const patch = patchForDeprecation.bind(null, octokit, apiOptions);
-            request = patch(
-              octokit.request.defaults(endpointDefaults),
-              `.${namespaceName}.${apiName}()`
-            );
+            request = patch(octokit.request.defaults(endpointDefaults), `.${namespaceName}.${apiName}()`);
             request.endpoint = patch(request.endpoint, `.${namespaceName}.${apiName}.endpoint()`);
-            request.endpoint.merge = patch(
-              request.endpoint.merge,
-              `.${namespaceName}.${apiName}.endpoint.merge()`
-            );
+            request.endpoint.merge = patch(request.endpoint.merge, `.${namespaceName}.${apiName}.endpoint.merge()`);
           }
           if (apiOptions.deprecated) {
             octokit[namespaceName][apiName] = Object.assign(function deprecatedEndpointMethod() {
-              octokit.log.warn(
-                new deprecation.Deprecation(`[@octokit/rest] ${apiOptions.deprecated}`)
-              );
+              octokit.log.warn(new deprecation.Deprecation(`[@octokit/rest] ${apiOptions.deprecated}`));
               octokit[namespaceName][apiName] = request;
               return request.apply(null, arguments);
             }, request);
@@ -18731,8 +18519,7 @@ var require_package2 = __commonJS({
         }
       ],
       _resolved: 'https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz',
-      _integrity:
-        'sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==',
+      _integrity: 'sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==',
       _from: '@octokit/rest@16.43.2'
     };
   }
@@ -18804,9 +18591,7 @@ var require_parse_client_options = __commonJS({
       }
       const userAgentOption = clientDefaults.headers['user-agent'];
       const defaultUserAgent = `octokit.js/${pkg.version} ${getUserAgent()}`;
-      clientDefaults.headers['user-agent'] = [userAgentOption, defaultUserAgent]
-        .filter(Boolean)
-        .join(' ');
+      clientDefaults.headers['user-agent'] = [userAgentOption, defaultUserAgent].filter(Boolean).join(' ');
       clientDefaults.request.hook = hook.bind(null, 'request');
       return clientDefaults;
     }
@@ -18882,8 +18667,7 @@ var require_dist_node10 = __commonJS({
     'use strict';
     Object.defineProperty(exports2, '__esModule', { value: true });
     async function auth(token2) {
-      const tokenType =
-        token2.split(/\./).length === 3 ? 'app' : /^v\d+\./.test(token2) ? 'installation' : 'oauth';
+      const tokenType = token2.split(/\./).length === 3 ? 'app' : /^v\d+\./.test(token2) ? 'installation' : 'oauth';
       return {
         type: 'token',
         token: token2,
@@ -18937,10 +18721,7 @@ var require_atob_node = __commonJS({
 
 // node_modules/@octokit/rest/plugins/authentication/with-authorization-prefix.js
 var require_with_authorization_prefix = __commonJS({
-  'node_modules/@octokit/rest/plugins/authentication/with-authorization-prefix.js'(
-    exports2,
-    module2
-  ) {
+  'node_modules/@octokit/rest/plugins/authentication/with-authorization-prefix.js'(exports2, module2) {
     module2.exports = withAuthorizationPrefix;
     var atob = require_atob_node();
     var REGEX_IS_BASIC_AUTH = /^[\w-]+:/;
@@ -19022,11 +18803,7 @@ var require_dist_node11 = __commonJS({
         this.status = statusCode;
         Object.defineProperty(this, 'code', {
           get() {
-            logOnce(
-              new deprecation.Deprecation(
-                '[@octokit/request-error] `error.code` is deprecated, use `error.status`.'
-              )
-            );
+            logOnce(new deprecation.Deprecation('[@octokit/request-error] `error.code` is deprecated, use `error.status`.'));
             return statusCode;
           }
         });
@@ -19058,12 +18835,7 @@ var require_request_error = __commonJS({
       if (error.status !== 401 || !otpRequired) {
         throw error;
       }
-      if (
-        error.status === 401 &&
-        otpRequired &&
-        error.request &&
-        error.request.headers['x-github-otp']
-      ) {
+      if (error.status === 401 && otpRequired && error.request && error.request.headers['x-github-otp']) {
         if (state.otp) {
           delete state.otp;
         } else {
@@ -19151,8 +18923,7 @@ var require_authentication = __commonJS({
           });
         return;
       }
-      const isBasicAuthString =
-        typeof options.auth === 'string' && /^basic/.test(withAuthorizationPrefix(options.auth));
+      const isBasicAuthString = typeof options.auth === 'string' && /^basic/.test(withAuthorizationPrefix(options.auth));
       if (typeof options.auth === 'string' && !isBasicAuthString) {
         const auth = createTokenAuth(options.auth);
         octokit.hook.wrap('request', auth.hook);
@@ -19187,10 +18958,7 @@ var require_authentication = __commonJS({
 
 // node_modules/@octokit/rest/plugins/authentication-deprecated/authenticate.js
 var require_authenticate = __commonJS({
-  'node_modules/@octokit/rest/plugins/authentication-deprecated/authenticate.js'(
-    exports2,
-    module2
-  ) {
+  'node_modules/@octokit/rest/plugins/authentication-deprecated/authenticate.js'(exports2, module2) {
     module2.exports = authenticate;
     var { Deprecation } = require_dist_node4();
     var once = require_once();
@@ -19198,9 +18966,7 @@ var require_authenticate = __commonJS({
     function authenticate(state, options) {
       deprecateAuthenticate(
         state.octokit.log,
-        new Deprecation(
-          '[@octokit/rest] octokit.authenticate() is deprecated. Use "auth" constructor option instead.'
-        )
+        new Deprecation('[@octokit/rest] octokit.authenticate() is deprecated. Use "auth" constructor option instead.')
       );
       if (!options) {
         state.auth = false;
@@ -19224,9 +18990,7 @@ var require_authenticate = __commonJS({
           }
           break;
         default:
-          throw new Error(
-            "Invalid authentication type, must be 'basic', 'oauth', 'token' or 'app'"
-          );
+          throw new Error("Invalid authentication type, must be 'basic', 'oauth', 'token' or 'app'");
       }
       state.auth = options;
     }
@@ -19584,10 +19348,7 @@ var require_lodash = __commonJS({
 
 // node_modules/@octokit/rest/plugins/authentication-deprecated/before-request.js
 var require_before_request2 = __commonJS({
-  'node_modules/@octokit/rest/plugins/authentication-deprecated/before-request.js'(
-    exports2,
-    module2
-  ) {
+  'node_modules/@octokit/rest/plugins/authentication-deprecated/before-request.js'(exports2, module2) {
     module2.exports = authenticationBeforeRequest;
     var btoa = require_btoa_node();
     var uniq = require_lodash();
@@ -19606,9 +19367,7 @@ var require_before_request2 = __commonJS({
       }
       if (state.auth.type === 'app') {
         options.headers.authorization = `Bearer ${state.auth.token}`;
-        const acceptHeaders = options.headers.accept
-          .split(',')
-          .concat('application/vnd.github.machine-man-preview+json');
+        const acceptHeaders = options.headers.accept.split(',').concat('application/vnd.github.machine-man-preview+json');
         options.headers.accept = uniq(acceptHeaders).filter(Boolean).join(',');
         return;
       }
@@ -19626,10 +19385,7 @@ var require_before_request2 = __commonJS({
 
 // node_modules/@octokit/rest/plugins/authentication-deprecated/request-error.js
 var require_request_error2 = __commonJS({
-  'node_modules/@octokit/rest/plugins/authentication-deprecated/request-error.js'(
-    exports2,
-    module2
-  ) {
+  'node_modules/@octokit/rest/plugins/authentication-deprecated/request-error.js'(exports2, module2) {
     module2.exports = authenticationRequestError;
     var { RequestError } = require_dist_node11();
     function authenticationRequestError(state, error, options) {
@@ -19638,12 +19394,7 @@ var require_request_error2 = __commonJS({
       if (error.status !== 401 || !otpRequired) {
         throw error;
       }
-      if (
-        error.status === 401 &&
-        otpRequired &&
-        error.request &&
-        error.request.headers['x-github-otp']
-      ) {
+      if (error.status === 401 && otpRequired && error.request && error.request.headers['x-github-otp']) {
         throw new RequestError('Invalid one-time password for two-factor authentication', 401, {
           headers: error.headers,
           request: options
@@ -19785,12 +19536,7 @@ var require_dist_node12 = __commonJS({
         mapFn = parameters;
         parameters = void 0;
       }
-      return gather(
-        octokit,
-        [],
-        iterator(octokit, route, parameters)[Symbol.asyncIterator](),
-        mapFn
-      );
+      return gather(octokit, [], iterator(octokit, route, parameters)[Symbol.asyncIterator](), mapFn);
     }
     function gather(octokit, results, iterator2, mapFn) {
       return iterator2.next().then(result => {
@@ -19843,8 +19589,7 @@ var require_lodash2 = __commonJS({
     var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
     var reIsPlainProp = /^\w*$/;
     var reLeadingDot = /^\./;
-    var rePropName =
-      /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+    var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
     var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
     var reEscapeChar = /\\(\\)?/g;
     var reIsHostCtor = /^\[object .+?Constructor\]$/;
@@ -20059,20 +19804,10 @@ var require_lodash2 = __commonJS({
         return false;
       }
       var type = typeof value;
-      if (
-        type == 'number' ||
-        type == 'symbol' ||
-        type == 'boolean' ||
-        value == null ||
-        isSymbol(value)
-      ) {
+      if (type == 'number' || type == 'symbol' || type == 'boolean' || value == null || isSymbol(value)) {
         return true;
       }
-      return (
-        reIsPlainProp.test(value) ||
-        !reIsDeepProp.test(value) ||
-        (object != null && value in Object(object))
-      );
+      return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || (object != null && value in Object(object));
     }
     function isKeyable(value) {
       var type = typeof value;
@@ -20147,9 +19882,7 @@ var require_lodash2 = __commonJS({
       return !!value && typeof value == 'object';
     }
     function isSymbol(value) {
-      return (
-        typeof value == 'symbol' || (isObjectLike(value) && objectToString.call(value) == symbolTag)
-      );
+      return typeof value == 'symbol' || (isObjectLike(value) && objectToString.call(value) == symbolTag);
     }
     function toString(value) {
       return value == null ? '' : baseToString(value);
@@ -20175,8 +19908,7 @@ var require_lodash3 = __commonJS({
     var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
     var reIsPlainProp = /^\w*$/;
     var reLeadingDot = /^\./;
-    var rePropName =
-      /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+    var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
     var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
     var reEscapeChar = /\\(\\)?/g;
     var reIsHostCtor = /^\[object .+?Constructor\]$/;
@@ -20343,10 +20075,7 @@ var require_lodash3 = __commonJS({
     MapCache.prototype.set = mapCacheSet;
     function assignValue(object, key, value) {
       var objValue = object[key];
-      if (
-        !(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
-        (value === void 0 && !(key in object))
-      ) {
+      if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || (value === void 0 && !(key in object))) {
         object[key] = value;
       }
     }
@@ -20413,33 +20142,17 @@ var require_lodash3 = __commonJS({
     }
     function isIndex(value, length) {
       length = length == null ? MAX_SAFE_INTEGER : length;
-      return (
-        !!length &&
-        (typeof value == 'number' || reIsUint.test(value)) &&
-        value > -1 &&
-        value % 1 == 0 &&
-        value < length
-      );
+      return !!length && (typeof value == 'number' || reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
     }
     function isKey(value, object) {
       if (isArray(value)) {
         return false;
       }
       var type = typeof value;
-      if (
-        type == 'number' ||
-        type == 'symbol' ||
-        type == 'boolean' ||
-        value == null ||
-        isSymbol(value)
-      ) {
+      if (type == 'number' || type == 'symbol' || type == 'boolean' || value == null || isSymbol(value)) {
         return true;
       }
-      return (
-        reIsPlainProp.test(value) ||
-        !reIsDeepProp.test(value) ||
-        (object != null && value in Object(object))
-      );
+      return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || (object != null && value in Object(object));
     }
     function isKeyable(value) {
       var type = typeof value;
@@ -20514,9 +20227,7 @@ var require_lodash3 = __commonJS({
       return !!value && typeof value == 'object';
     }
     function isSymbol(value) {
-      return (
-        typeof value == 'symbol' || (isObjectLike(value) && objectToString.call(value) == symbolTag)
-      );
+      return typeof value == 'symbol' || (isObjectLike(value) && objectToString.call(value) == symbolTag);
     }
     function toString(value) {
       return value == null ? '' : baseToString(value);
@@ -20555,21 +20266,15 @@ var require_validate2 = __commonJS({
             parentParameterName = parentParameterName.slice(0, -2);
           }
           parentValue = get(options, parentParameterName);
-          parentParamIsPresent =
-            parentParameterName === 'headers' ||
-            (typeof parentValue === 'object' && parentValue !== null);
+          parentParamIsPresent = parentParameterName === 'headers' || (typeof parentValue === 'object' && parentValue !== null);
         }
         const values = parentParameterIsArray
-          ? (get(options, parentParameterName) || []).map(
-              value => value[parameterName.split(/\./).pop()]
-            )
+          ? (get(options, parentParameterName) || []).map(value => value[parameterName.split(/\./).pop()])
           : [get(options, parameterName)];
         values.forEach((value, i) => {
           const valueIsPresent = typeof value !== 'undefined';
           const valueIsNull = value === null;
-          const currentParameterName = parentParameterIsArray
-            ? parameterName.replace(/\[\]/, `[${i}]`)
-            : parameterName;
+          const currentParameterName = parentParameterIsArray ? parameterName.replace(/\[\]/, `[${i}]`) : parameterName;
           if (!parameter.required && !valueIsPresent) {
             return;
           }
@@ -20585,22 +20290,16 @@ var require_validate2 = __commonJS({
             });
           }
           if (parameter.required && !valueIsPresent) {
-            throw new RequestError(
-              `Empty value for parameter '${currentParameterName}': ${JSON.stringify(value)}`,
-              400,
-              {
-                request: options
-              }
-            );
+            throw new RequestError(`Empty value for parameter '${currentParameterName}': ${JSON.stringify(value)}`, 400, {
+              request: options
+            });
           }
           if (expectedType === 'integer') {
             const unparsedValue = value;
             value = parseInt(value, 10);
             if (isNaN(value)) {
               throw new RequestError(
-                `Invalid value for parameter '${currentParameterName}': ${JSON.stringify(
-                  unparsedValue
-                )} is NaN`,
+                `Invalid value for parameter '${currentParameterName}': ${JSON.stringify(unparsedValue)} is NaN`,
                 400,
                 {
                   request: options
@@ -20609,24 +20308,16 @@ var require_validate2 = __commonJS({
             }
           }
           if (parameter.enum && parameter.enum.indexOf(String(value)) === -1) {
-            throw new RequestError(
-              `Invalid value for parameter '${currentParameterName}': ${JSON.stringify(value)}`,
-              400,
-              {
-                request: options
-              }
-            );
+            throw new RequestError(`Invalid value for parameter '${currentParameterName}': ${JSON.stringify(value)}`, 400, {
+              request: options
+            });
           }
           if (parameter.validation) {
             const regex = new RegExp(parameter.validation);
             if (!regex.test(value)) {
-              throw new RequestError(
-                `Invalid value for parameter '${currentParameterName}': ${JSON.stringify(value)}`,
-                400,
-                {
-                  request: options
-                }
-              );
+              throw new RequestError(`Invalid value for parameter '${currentParameterName}': ${JSON.stringify(value)}`, 400, {
+                request: options
+              });
             }
           }
           if (expectedType === 'object' && typeof value === 'string') {
@@ -20634,9 +20325,7 @@ var require_validate2 = __commonJS({
               value = JSON.parse(value);
             } catch (exception) {
               throw new RequestError(
-                `JSON parse error of value for parameter '${currentParameterName}': ${JSON.stringify(
-                  value
-                )}`,
+                `JSON parse error of value for parameter '${currentParameterName}': ${JSON.stringify(value)}`,
                 400,
                 {
                   request: options
@@ -20741,8 +20430,7 @@ var require_get_page = __commonJS({
         return headers;
       }
       headers = headers || {};
-      headers.accept =
-        'application/vnd.' + previous.replace('; param=', '.').replace('; format=', '+');
+      headers.accept = 'application/vnd.' + previous.replace('; param=', '.').replace('; format=', '+');
       return headers;
     }
   }
@@ -20916,13 +20604,9 @@ var require_context = __commonJS({
         this.payload = {};
         if (process.env.GITHUB_EVENT_PATH) {
           if (fs_1.existsSync(process.env.GITHUB_EVENT_PATH)) {
-            this.payload = JSON.parse(
-              fs_1.readFileSync(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' })
-            );
+            this.payload = JSON.parse(fs_1.readFileSync(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
           } else {
-            process.stdout.write(
-              `GITHUB_EVENT_PATH ${process.env.GITHUB_EVENT_PATH} does not exist${os_1.EOL}`
-            );
+            process.stdout.write(`GITHUB_EVENT_PATH ${process.env.GITHUB_EVENT_PATH} does not exist${os_1.EOL}`);
           }
         }
         this.eventName = process.env.GITHUB_EVENT_NAME;
@@ -20934,9 +20618,7 @@ var require_context = __commonJS({
       }
       get issue() {
         const payload = this.payload;
-        return Object.assign({}, this.repo, {
-          number: (payload.issue || payload.pullRequest || payload).number
-        });
+        return Object.assign({}, this.repo, { number: (payload.issue || payload.pullRequest || payload).number });
       }
       get repo() {
         if (process.env.GITHUB_REPOSITORY) {
@@ -20949,9 +20631,7 @@ var require_context = __commonJS({
             repo: this.payload.repository.name
           };
         }
-        throw new Error(
-          "context.repo requires a GITHUB_REPOSITORY environment variable like 'owner/repo'"
-        );
+        throw new Error("context.repo requires a GITHUB_REPOSITORY environment variable like 'owner/repo'");
       }
     };
     exports2.Context = Context;
@@ -21007,7 +20687,6 @@ var requiredArgOptions = {
 var token = core.getInput('github-token', requiredArgOptions);
 var tagInput = core.getInput('tag-name', requiredArgOptions);
 var releaseNameInput = core.getInput('release-name') || tagInput;
-var commitish = core.getInput('commitish') || context.sha;
 var body = core.getInput('body');
 var bodyPath = core.getInput('body-path');
 var draft = core.getInput('draft') === 'true';
@@ -21019,6 +20698,25 @@ var assetContentType = core.getInput('asset-content-type');
 var tag = tagInput.replace('refs/tags/', '');
 var releaseName = releaseNameInput.replace('refs/tags/', '');
 var github = new GitHub(token);
+console.log(`Current context.sha: ${context.sha}`);
+console.log(`Current PR sha: ${context.payload.pull_request.head.sha}`);
+console.log('context:');
+console.log(context);
+console.log('\n\n');
+console.log('context pr head:');
+console.log(context.payload.pull_request.head);
+console.log('\n\n');
+var commitish = core.getInput('commitish');
+if (!commitish && context.eventName == 'pull_request') {
+  core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
+  commitish = context.payload.pull_request.head.sha;
+} else if (!commitish) {
+  core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
+  commitish = context.sha;
+} else {
+  commitish = commitish.replace('refs/heads/', '').replace('refs/tags/', '');
+  core.info(`The commitish arg was provided, using ${commitish}`);
+}
 var release_id;
 var release_html_url;
 var asset_upload_url;
@@ -21055,9 +20753,7 @@ async function deleteExistingRelease() {
       });
       core.info(`Finished deleting release with tag ${tag}.`);
     } else {
-      core.info(
-        `The release with tag ${tag} does not appear to exist, the api returned status code ${response.status}.`
-      );
+      core.info(`The release with tag ${tag} does not appear to exist, the api returned status code ${response.status}.`);
     }
   } catch (error) {
     core.info(`The release with tag ${tag} does not appear to exist.`);

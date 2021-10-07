@@ -10,7 +10,6 @@ const requiredArgOptions = {
 const token = core.getInput('github-token', requiredArgOptions);
 const tagInput = core.getInput('tag-name', requiredArgOptions);
 const releaseNameInput = core.getInput('release-name') || tagInput;
-const commitish = core.getInput('commitish') || context.sha;
 const body = core.getInput('body');
 const bodyPath = core.getInput('body-path');
 const draft = core.getInput('draft') === 'true';
@@ -24,6 +23,27 @@ const assetContentType = core.getInput('asset-content-type');
 const tag = tagInput.replace('refs/tags/', '');
 const releaseName = releaseNameInput.replace('refs/tags/', '');
 const github = new GitHub(token);
+
+console.log(`Current context.sha: ${context.sha}`);
+console.log(`Current PR sha: ${context.payload.pull_request.head.sha}`);
+console.log('context:');
+console.log(context);
+console.log('\n\n');
+console.log('context pr head:');
+console.log(context.payload.pull_request.head);
+console.log('\n\n');
+
+let commitish = core.getInput('commitish');
+if (!commitish && context.eventName == 'pull_request') {
+  core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
+  commitish = context.payload.pull_request.head.sha;
+} else if (!commitish) {
+  core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
+  commitish = context.sha;
+} else {
+  commitish = commitish.replace('refs/heads/', '').replace('refs/tags/', '');
+  core.info(`The commitish arg was provided, using ${commitish}`);
+}
 
 let release_id;
 let release_html_url;
@@ -69,9 +89,7 @@ async function deleteExistingRelease() {
       });
       core.info(`Finished deleting release with tag ${tag}.`);
     } else {
-      core.info(
-        `The release with tag ${tag} does not appear to exist, the api returned status code ${response.status}.`
-      );
+      core.info(`The release with tag ${tag} does not appear to exist, the api returned status code ${response.status}.`);
     }
   } catch (error) {
     core.info(`The release with tag ${tag} does not appear to exist.`);
