@@ -23,7 +23,7 @@ This action also has the option of deleting the release if it already exists.  I
 | `github-token`            | true                             | A token with permission to create and delete releases.  Generally secrets.GITHUB_TOKEN.                                                    |
 | `tag-name`                | true                             | The name of the tag.                                                                                                                       |
 | `release-name`            | false                            | The name of the release. Defaults to the tag name if not provided.                                                                         |
-| `commitish`               | true                             | Specifies the commitish value that determines where the Git tag is created from. Can be any branch or commit SHA.                          |
+| `commitish`               | true                             | Specifies the commitish value that identifies the commit to tag. Can be any branch or commit SHA.                                          |
 | `body`                    | false                            | Text describing the contents of the release.                                                                                               |
 | `body-path`               | false                            | Path to file with information about the release.                                                                                           |
 | `draft`                   | false                            | Flag indicating whether to create a draft (unpublished) release or a published one.<br/>Accepted Values: `true\|false`.  Default: `false`. |
