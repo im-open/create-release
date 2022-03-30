@@ -75,7 +75,7 @@ jobs:
 
       - name: Create Pre-release
         id: create_release
-        uses: im-open/create-release@v2.0.2
+        uses: im-open/create-release@v2.0.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
