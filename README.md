@@ -55,6 +55,7 @@ env:
 jobs:
   create-prebuilt-artifacts-and-release:
     runs-on: ubuntu-latest
+
     steps:
       - name: Determine commitish to build and tag
         uses: actions/github-script@v6
@@ -64,32 +65,40 @@ jobs:
             const sourceRef = '${{ github.head_ref }}';
             const mergeRef = '${{ github.ref }}';
             
-            const prMergedToMain = '${{ github.event.pull_request.merged }}' === 'true' && targetRef === 'main';
+            const prClosed = '${{ github.event.action }}' === 'closed';
+            const prMerged = '${{ github.event.pull_request.merged }}' === 'true';
+            const prMergedToMain = prMerged && targetRef === 'main';
             const isPreRelease = !prMergedToMain
+            const doBuild = prClosed && !prMerged? false : true;
             
             const refToBuildAndTag = prMergedToMain ? mergeRef : sourceRef;
             core.exportVariable('REF_TO_BUILD', refToBuildAndTag);
             core.exportVariable('IS_PRERELEASE', isPreRelease);
+            core.exportVariable('DO_BUILD', doBuild);
             
       - uses: actions/checkout@v2
+        if: env.DO_BUILD == 'true'
         with: 
           fetch-depth: 0
           ref: ${{ env.REF_TO_BUILD }}
 
       - name: Calculate next version
         id: version
+        if: env.DO_BUILD == 'true'
         uses: im-open/git-version-lite@v2.0.6
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
 
       - name: Build, Publish and Zip App
+        if: env.DO_BUILD == 'true'
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
           dotnet publish -c Release -o ./published_app 
           (cd published_app && zip -r ../${{env.DEPLOY_ZIP}} .)
 
       - name: Create Release
+        if: env.DO_BUILD == 'true'
         id: create_release
         uses: im-open/create-release@v3.0.0
         with:
