@@ -15,6 +15,7 @@ const bodyPath = core.getInput('body-path');
 const draft = core.getInput('draft') === 'true';
 const prerelease = core.getInput('prerelease') === 'true';
 const shouldDeleteExistingRelease = core.getInput('delete-existing-release') === 'true';
+const commitish = core.getInput('commitish');
 
 const assetPath = core.getInput('asset-path');
 const assetName = core.getInput('asset-name');
@@ -24,22 +25,6 @@ const tag = tagInput.replace('refs/tags/', '');
 const releaseName = releaseNameInput.replace('refs/tags/', '');
 const github = new GitHub(token);
 
-let commitish = core.getInput('commitish');
-if (!commitish) {
-  if (context.eventName == 'pull_request') {
-    core.info(`Current github context.sha: ${context.sha}`);
-    core.info(`Current github context.PR.head.sha: ${context.payload.pull_request.head.sha}`);
-    core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
-    commitish = context.payload.pull_request.head.sha;
-  } else {
-    core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
-    commitish = context.sha;
-  }
-} else {
-  commitish = commitish.replace('refs/heads/', '').replace('refs/tags/', '');
-  core.info(`The commitish arg was provided, using ${commitish}`);
-}
-
 let release_id;
 let release_html_url;
 let asset_upload_url;
@@ -48,15 +33,6 @@ let hasAssetToUpload = true;
 
 function isEmpty(valueToTest) {
   return !valueToTest || valueToTest.trim().length === 0;
-}
-
-if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
-  hasAssetToUpload = false;
-} else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {
-  core.setFailed(
-    `One or more arguments required to upload an asset were not provided:\n\tasset-name:'${assetName}'\n\tasset-path:'${assetPath}'\n\tasset-content-type:'${assetContentType}'`
-  );
-  return;
 }
 
 async function deleteExistingRelease() {
@@ -171,6 +147,15 @@ async function uploadAsset(uploadUrl) {
 }
 
 async function run() {
+  if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
+    hasAssetToUpload = false;
+  } else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {
+    core.setFailed(
+      `One or more arguments required to upload an asset were not provided:\n\tasset-name:'${assetName}'\n\tasset-path:'${assetPath}'\n\tasset-content-type:'${assetContentType}'`
+    );
+    return;
+  }
+
   if (shouldDeleteExistingRelease) {
     await deleteExistingRelease();
   }

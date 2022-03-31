@@ -30690,27 +30690,13 @@ var bodyPath = core.getInput('body-path');
 var draft = core.getInput('draft') === 'true';
 var prerelease = core.getInput('prerelease') === 'true';
 var shouldDeleteExistingRelease = core.getInput('delete-existing-release') === 'true';
+var commitish = core.getInput('commitish');
 var assetPath = core.getInput('asset-path');
 var assetName = core.getInput('asset-name');
 var assetContentType = core.getInput('asset-content-type');
 var tag = tagInput.replace('refs/tags/', '');
 var releaseName = releaseNameInput.replace('refs/tags/', '');
 var github = new GitHub(token);
-var commitish = core.getInput('commitish');
-if (!commitish) {
-  if (context.eventName == 'pull_request') {
-    core.info(`Current github context.sha: ${context.sha}`);
-    core.info(`Current github context.PR.head.sha: ${context.payload.pull_request.head.sha}`);
-    core.info(`The commitish arg was empty for the pull_request, using PR's head sha: ${context.payload.pull_request.head.sha}`);
-    commitish = context.payload.pull_request.head.sha;
-  } else {
-    core.info(`The commitish arg was empty, using context.sha: ${context.sha}`);
-    commitish = context.sha;
-  }
-} else {
-  commitish = commitish.replace('refs/heads/', '').replace('refs/tags/', '');
-  core.info(`The commitish arg was provided, using ${commitish}`);
-}
 var release_id;
 var release_html_url;
 var asset_upload_url;
@@ -30718,15 +30704,6 @@ var asset_browser_download_url;
 var hasAssetToUpload = true;
 function isEmpty(valueToTest) {
   return !valueToTest || valueToTest.trim().length === 0;
-}
-if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
-  hasAssetToUpload = false;
-} else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {
-  core.setFailed(`One or more arguments required to upload an asset were not provided:
-	asset-name:'${assetName}'
-	asset-path:'${assetPath}'
-	asset-content-type:'${assetContentType}'`);
-  return;
 }
 async function deleteExistingRelease() {
   core.info('Checking if the release exists...');
@@ -30815,6 +30792,15 @@ async function uploadAsset(uploadUrl) {
   }
 }
 async function run() {
+  if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
+    hasAssetToUpload = false;
+  } else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {
+    core.setFailed(`One or more arguments required to upload an asset were not provided:
+	asset-name:'${assetName}'
+	asset-path:'${assetPath}'
+	asset-content-type:'${assetContentType}'`);
+    return;
+  }
   if (shouldDeleteExistingRelease) {
     await deleteExistingRelease();
   }
