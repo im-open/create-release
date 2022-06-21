@@ -14821,7 +14821,10 @@ var require_package = __commonJS({
       standard: {
         globals: ['describe', 'before', 'beforeEach', 'afterEach', 'after', 'it', 'expect']
       },
-      files: ['lib']
+      files: ['lib'],
+      _resolved: 'https://registry.npmjs.org/@octokit/graphql/-/graphql-2.1.3.tgz',
+      _integrity: 'sha512-XoXJqL2ondwdnMIW3wtqJWEwcBfKk37jO/rYkoxNPEVeLBDGsGO1TCWggrAlq3keGt/O+C/7VepXnukUxwt5vA==',
+      _from: '@octokit/graphql@2.1.3'
     };
   }
 });
@@ -28512,7 +28515,10 @@ var require_package2 = __commonJS({
           path: './dist/octokit-rest.min.js.gz',
           maxSize: '33 kB'
         }
-      ]
+      ],
+      _resolved: 'https://registry.npmjs.org/@octokit/rest/-/rest-16.43.2.tgz',
+      _integrity: 'sha512-ngDBevLbBTFfrHZeiS7SAMAZ6ssuVmXuya+F/7RaVvlysgGa1JKJkKWY+jV6TCJYcW0OALfJ7nTIGXcBXzycfQ==',
+      _from: '@octokit/rest@16.43.2'
     };
   }
 });
