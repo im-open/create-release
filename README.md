@@ -72,6 +72,7 @@ jobs:
             const doBuild = prClosed && !prMerged? false : true;
             
             const refToBuildAndTag = prMergedToMain ? mergeRef : sourceRef;
+            
             core.exportVariable('REF_TO_BUILD', refToBuildAndTag);
             core.exportVariable('IS_PRERELEASE', isPreRelease);
             core.exportVariable('DO_BUILD', doBuild);
@@ -100,7 +101,7 @@ jobs:
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
-        uses: im-open/create-release@v3.0.0
+        uses: im-open/create-release@v3.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
