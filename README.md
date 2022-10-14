@@ -86,7 +86,7 @@ jobs:
       - name: Calculate next version
         id: version
         if: env.DO_BUILD == 'true'
-        uses: im-open/git-version-lite@v2.1.0
+        uses: im-open/git-version-lite@v2.1.1
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
@@ -101,7 +101,7 @@ jobs:
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
-        uses: im-open/create-release@v3.0.1
+        uses: im-open/create-release@v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
