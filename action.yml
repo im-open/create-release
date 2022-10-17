@@ -53,5 +53,5 @@ outputs:
   asset-browser-download-url:
     description: 'URL users can navigate to in order to download the uploaded asset'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'

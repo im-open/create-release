@@ -77,7 +77,7 @@ jobs:
             core.exportVariable('IS_PRERELEASE', isPreRelease);
             core.exportVariable('DO_BUILD', doBuild);
             
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         if: env.DO_BUILD == 'true'
         with: 
           fetch-depth: 0
@@ -86,7 +86,7 @@ jobs:
       - name: Calculate next version
         id: version
         if: env.DO_BUILD == 'true'
-        uses: im-open/git-version-lite@v2.0.6
+        uses: im-open/git-version-lite@v2.1.1
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
@@ -101,7 +101,7 @@ jobs:
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
-        uses: im-open/create-release@v3.0.1
+        uses: im-open/create-release@v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
