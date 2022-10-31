@@ -16544,6 +16544,8 @@ var commitish = core.getInput('commitish', requiredArgOptions);
 var assetPath = core.getInput('asset-path');
 var assetName = core.getInput('asset-name');
 var assetContentType = core.getInput('asset-content-type');
+var orgName = github.context.repo.owner;
+var repoName = github.context.repo.repo;
 var tag = tagInput.replace('refs/tags/', '');
 var releaseName = releaseNameInput.replace('refs/tags/', '');
 var octokit = github.getOctokit(token);
@@ -16560,8 +16562,8 @@ async function deleteExistingRelease() {
   core.info('Checking if the release exists...');
   await octokit.rest.repos
     .getReleaseByTag({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
+      owner: orgName,
+      repo: repoName,
       tag
     })
     .then(response => {
@@ -16576,8 +16578,8 @@ async function deleteExistingRelease() {
     core.info(`Try to delete release with tag ${tag}...`);
     await octokit.rest.repos
       .deleteRelease({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
+        owner: orgName,
+        repo: repoName,
         release_id: releaseId
       })
       .then(() => {
@@ -16602,8 +16604,8 @@ async function createRelease() {
   }
   await octokit.rest.repos
     .createRelease({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
+      owner: orgName,
+      repo: repoName,
       tag_name: tag,
       name: releaseName,
       body: bodyFileContent || body,
@@ -16612,9 +16614,9 @@ async function createRelease() {
       target_commitish: commitish
     })
     .then(createReleaseResponse => {
-      release_id = createReleaseResponse.data.releaseId;
-      release_html_url = createReleaseResponse.data.htmlUrl;
-      asset_upload_url = createReleaseResponse.data.uploadUrl;
+      release_id = createReleaseResponse.data.id;
+      release_html_url = createReleaseResponse.data.html_url;
+      asset_upload_url = createReleaseResponse.data.upload_url;
       core.setOutput('release-id', release_id);
       core.setOutput('release-html-url', release_html_url);
       core.setOutput('asset-upload-url', asset_upload_url);
@@ -16648,6 +16650,7 @@ async function uploadAsset(uploadUrl) {
     });
 }
 async function run() {
+  core.info(`Creating release in ${orgName}\${repoName}`);
   if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
     hasAssetToUpload = false;
   } else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {
