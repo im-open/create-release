@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const { GitHub, context } = require('@actions/github');
+const github = require('@actions/github');
 const fs = require('fs');
 
 const requiredArgOptions = {
@@ -12,10 +12,10 @@ const tagInput = core.getInput('tag-name', requiredArgOptions);
 const releaseNameInput = core.getInput('release-name') || tagInput;
 const body = core.getInput('body');
 const bodyPath = core.getInput('body-path');
-const draft = core.getInput('draft') === 'true';
-const prerelease = core.getInput('prerelease') === 'true';
-const shouldDeleteExistingRelease = core.getInput('delete-existing-release') === 'true';
-const commitish = core.getInput('commitish');
+const draft = core.getBooleanInput('draft');
+const prerelease = core.getBooleanInput('prerelease');
+const shouldDeleteExistingRelease = core.getBooleanInput('delete-existing-release');
+const commitish = core.getInput('commitish', requiredArgOptions);
 
 const assetPath = core.getInput('asset-path');
 const assetName = core.getInput('asset-name');
@@ -23,7 +23,7 @@ const assetContentType = core.getInput('asset-content-type');
 
 const tag = tagInput.replace('refs/tags/', '');
 const releaseName = releaseNameInput.replace('refs/tags/', '');
-const github = new GitHub(token);
+const octokit = github.getOctokit(token);
 
 let release_id;
 let release_html_url;
@@ -36,114 +36,114 @@ function isEmpty(valueToTest) {
 }
 
 async function deleteExistingRelease() {
-  core.info('Checking if the release exists...');
+  // Right now this throws an exception when the release does not exist
+  // so it will be handled in the catch.
+  let releaseId;
 
-  try {
-    // Right now this throws an exception when the release does not exist
-    // so it will be handled in the catch.  Adding the status check below
-    // in case the implementation changes.
-    const response = await github.repos.getReleaseByTag({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
+  core.info('Checking if the release exists...');
+  await octokit.rest.repos
+    .getReleaseByTag({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
       tag: tag
+    })
+    .then(response => {
+      core.info(`The release with tag ${tag} exists.`);
+      releaseId = response.data.id;
+    })
+    .catch(() => {
+      releaseId = null;
+      core.info(`The release with tag ${tag} does not appear to exist.  Nothing will be deleted.`);
     });
 
-    if (response && response.status == 200) {
-      core.info(`The release with tag ${tag} exists.`);
-      core.info(`Deleting release with tag ${tag}...`);
-
-      const releaseId = response.data.id;
-      await github.repos.deleteRelease({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
+  if (releaseId) {
+    core.info(`Try to delete release with tag ${tag}...`);
+    await octokit.rest.repos
+      .deleteRelease({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
         release_id: releaseId
+      })
+      .then(() => {
+        core.info(`Finished deleting release with tag ${tag}.`);
+      })
+      .catch(error => {
+        core.setFailed(`An error occurred deleting the existing release: ${error.message}`);
       });
-      core.info(`Finished deleting release with tag ${tag}.`);
-    } else {
-      core.info(`The release with tag ${tag} does not appear to exist, the api returned status code ${response.status}.`);
-    }
-  } catch (error) {
-    core.info(`The release with tag ${tag} does not appear to exist.`);
   }
 }
 
 async function createRelease() {
-  try {
-    // Grab the contents of the file
-    let bodyFileContent = null;
-    if (!isEmpty(bodyPath)) {
-      try {
-        core.info(`Getting contents of body file '${bodyPath}'...`);
-        bodyFileContent = fs.readFileSync(bodyPath, {
-          encoding: 'utf8'
-        });
-      } catch (error) {
-        core.setFailed(`An error occurred getting the contents of the body file: ${error.message}`);
-      }
+  // Grab the contents of the file
+  let bodyFileContent = null;
+  if (!isEmpty(bodyPath)) {
+    try {
+      core.info(`Getting contents of body file '${bodyPath}'...`);
+      bodyFileContent = fs.readFileSync(bodyPath, {
+        encoding: 'utf8'
+      });
+    } catch (error) {
+      core.setFailed(`An error occurred getting the contents of the body file: ${error.message}`);
     }
+  }
 
-    // Create a release
-    const createReleaseResponse = await github.repos.createRelease({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
+  // Create a release
+  await octokit.rest.repos
+    .createRelease({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
       tag_name: tag,
       name: releaseName,
       body: bodyFileContent || body,
       draft,
       prerelease,
       target_commitish: commitish
+    })
+    .then(createReleaseResponse => {
+      release_id = createReleaseResponse.data.releaseId;
+      release_html_url = createReleaseResponse.data.htmlUrl;
+      asset_upload_url = createReleaseResponse.data.uploadUrl;
+
+      core.setOutput('release-id', release_id);
+      core.setOutput('release-html-url', release_html_url);
+      core.setOutput('asset-upload-url', asset_upload_url);
+    })
+    .catch(error => {
+      core.setFailed(`An error occurred creating the release: ${error.message}`);
     });
 
-    const {
-      data: { id: releaseId, html_url: htmlUrl, upload_url: uploadUrl }
-    } = createReleaseResponse;
-
-    release_id = releaseId;
-    release_html_url = htmlUrl;
-    asset_upload_url = uploadUrl;
-
-    core.setOutput('release-id', releaseId);
-    core.setOutput('release-html-url', htmlUrl);
-    core.setOutput('asset-upload-url', uploadUrl);
-
-    return uploadUrl;
-  } catch (error) {
-    core.setFailed(`An error occurred creating the release: ${error.message}`);
-  }
+  return asset_upload_url;
 }
 
 async function uploadAsset(uploadUrl) {
-  try {
-    core.info(`Starting upload of ${assetName}...`);
+  core.info(`Starting upload of ${assetName}...`);
 
-    const contentLength = filePath => fs.statSync(filePath).size; // Calculates content-length for file passed in.  Used in header to upload asset.
+  const contentLength = filePath => fs.statSync(filePath).size; // Calculates content-length for file passed in.  Used in header to upload asset.
 
-    // Setup headers for API call https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
-    const headers = {
-      'content-type': assetContentType,
-      'content-length': contentLength(assetPath)
-    };
+  // Setup headers for API call https://octokit.github.io/rest.js/#octokit-routes-repos-upload-release-asset
+  const headers = {
+    'content-type': assetContentType,
+    'content-length': contentLength(assetPath)
+  };
 
-    const uploadAssetResponse = await github.repos.uploadReleaseAsset({
+  await octokit.rest.repos
+    .uploadReleaseAsset({
       url: uploadUrl,
       headers,
       name: assetName,
       data: fs.readFileSync(assetPath)
+    })
+    .then(uploadAssetResponse => {
+      // Get the browser_download_url for the uploaded release asset from the response
+      // Set the output variable for use by other actions: https://github.com/actions/toolkit/tree/master/packages/core#inputsoutputs
+      asset_browser_download_url = uploadAssetResponse.data.browser_download_url;
+      core.setOutput('asset-browser-download-url', asset_browser_download_url);
+
+      core.info(`Finished uploading ${assetName} to the release.`);
+    })
+    .catch(error => {
+      core.setFailed(`An error occurred uploading the asset: ${error.message}`);
     });
-
-    // Get the browser_download_url for the uploaded release asset from the response
-    const {
-      data: { browser_download_url: browserDownloadUrl }
-    } = uploadAssetResponse;
-
-    // Set the output variable for use by other actions: https://github.com/actions/toolkit/tree/master/packages/core#inputsoutputs
-    asset_browser_download_url = browserDownloadUrl;
-    core.setOutput('asset-browser-download-url', browserDownloadUrl);
-
-    core.info(`Finished uploading ${assetName} to the release.`);
-  } catch (error) {
-    core.setFailed(`An error occurred uploading the asset: ${error.message}`);
-  }
 }
 
 async function run() {
