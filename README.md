@@ -101,7 +101,7 @@ jobs:
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
-        uses: im-open/create-release@v3.1.1
+        uses: im-open/create-release@v3.1.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
