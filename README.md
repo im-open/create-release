@@ -101,6 +101,7 @@ jobs:
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
+        # You may also reference just the major or major.minor version.
         uses: im-open/create-release@v3.1.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
