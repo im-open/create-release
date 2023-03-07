@@ -1,7 +1,7 @@
-name: 'create-release'
+name: create-release
+description: Create a release for a tag in your repository
+author: GitHub
 
-description: 'Create a release for a tag in your repository'
-author: 'GitHub'
 inputs:
   github-token:
     description: 'A token with permission to create and delete releases.  Generally secrets.GITHUB_TOKEN.'
