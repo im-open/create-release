@@ -16540,6 +16540,7 @@ var bodyPath = core.getInput('body-path');
 var draft = core.getBooleanInput('draft');
 var prerelease = core.getBooleanInput('prerelease');
 var shouldDeleteExistingRelease = core.getBooleanInput('delete-existing-release');
+var shouldGenerateReleaseNotes = core.getBooleanInput('generate-release-notes');
 var commitish = core.getInput('commitish', requiredArgOptions);
 var assetPath = core.getInput('asset-path');
 var assetName = core.getInput('asset-name');
@@ -16611,6 +16612,7 @@ async function createRelease() {
       body: bodyFileContent || body,
       draft,
       prerelease,
+      generate_release_notes: shouldGenerateReleaseNotes,
       target_commitish: commitish
     })
     .then(createReleaseResponse => {
