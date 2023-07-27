@@ -15,6 +15,7 @@ const bodyPath = core.getInput('body-path');
 const draft = core.getBooleanInput('draft');
 const prerelease = core.getBooleanInput('prerelease');
 const shouldDeleteExistingRelease = core.getBooleanInput('delete-existing-release');
+const shouldGenerateReleaseNotes = core.getBooleanInput('generate-release-notes');
 const commitish = core.getInput('commitish', requiredArgOptions);
 
 const assetPath = core.getInput('asset-path');
@@ -90,6 +91,7 @@ async function createRelease() {
     }
   }
 
+  // https://octokit.github.io/rest.js/v19#repos-create-release
   // Create a release
   await octokit.rest.repos
     .createRelease({
@@ -100,6 +102,7 @@ async function createRelease() {
       body: bodyFileContent || body,
       draft,
       prerelease,
+      generate_release_notes: shouldGenerateReleaseNotes,
       target_commitish: commitish
     })
     .then(createReleaseResponse => {

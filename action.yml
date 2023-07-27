@@ -33,6 +33,10 @@ inputs:
     description: 'Flag indicating whether to delete then re-create a release if it already exists.  Accepted Values: `true|false`.  Default: `false`.'
     required: false
     default: 'false'
+  generate-release-notes:
+    description: 'Flag indicating whether to auto-generate release notes for the release.  Accepted Values: `true|false`.  Default: `false`.'
+    required: false
+    default: 'false'
   asset-path:
     description: 'The path to the asset you want to upload.  Required when uploading an asset.'
     required: false
