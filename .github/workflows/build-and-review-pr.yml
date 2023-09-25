@@ -22,41 +22,332 @@ on:
   #   we can also use that to require all branches be up to date before they are merged.
 
 jobs:
-  build-and-review-pr:
-    # This reusable workflow will check to see if an action's source code has changed based on
-    # whether the PR includes files that match the files-with-code arg or are in one of the
-    # dirs-with-code directories.  If there are source code changes, this reusable workflow
-    # will then run the action's build (if one was provided) and update the README.md with the
-    # the latest version of the action.  If those two steps result in any changes that need to
-    # be committed, the workflow will fail because the PR needs some updates.  Instructions for
-    # updating the PR will be available in the build log, the workflow summary and as a PR
-    # comment if the PR came from a branch (not a fork).
-    # This workflow assumes:
-    #  - The main README.md is at the root of the repo
-    #  - The README contains a contribution guidelines and usage examples section
-    uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v1
-    with:
-      action-name: ${{ github.repository }}
-      default-branch: main
-      readme-name: 'README.md'
+  # build-and-review-pr:
+  #   # This reusable workflow will check to see if an action's source code has changed based on
+  #   # whether the PR includes files that match the files-with-code arg or are in one of the
+  #   # dirs-with-code directories.  If there are source code changes, this reusable workflow
+  #   # will then run the action's build (if one was provided) and update the README.md with the
+  #   # the latest version of the action.  If those two steps result in any changes that need to
+  #   # be committed, the workflow will fail because the PR needs some updates.  Instructions for
+  #   # updating the PR will be available in the build log, the workflow summary and as a PR
+  #   # comment if the PR came from a branch (not a fork).
+  #   # This workflow assumes:
+  #   #  - The main README.md is at the root of the repo
+  #   #  - The README contains a contribution guidelines and usage examples section
+  #   uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v1
+  #   with:
+  #     action-name: ${{ github.repository }}
+  #     default-branch: main
+  #     readme-name: 'README.md'
 
-      # The id of the contribution guidelines section of the README.md
-      readme-contribution-id: '#contributing'
+  #     # The id of the contribution guidelines section of the README.md
+  #     readme-contribution-id: '#contributing'
 
-      # The id of the usage examples section of the README.md
-      readme-examples-id: '#usage-examples'
+  #     # The id of the usage examples section of the README.md
+  #     readme-examples-id: '#usage-examples'
 
-      # The files that contain source code for the action.  Only files that affect the action's execution
-      # should be included like action.yml or package.json.  Do not include files like README.md or .gitignore.
-      # Files do not need to be explicitly provided here if they fall under one of the dirs in dirs-with-code.
-      # ** This value must match the same files-with-code argument specified in increment-version-on-merge.yml.
-      files-with-code: 'action.yml,package.json,package-lock.json'
+  #     # The files that contain source code for the action.  Only files that affect the action's execution
+  #     # should be included like action.yml or package.json.  Do not include files like README.md or .gitignore.
+  #     # Files do not need to be explicitly provided here if they fall under one of the dirs in dirs-with-code.
+  #     # ** This value must match the same files-with-code argument specified in increment-version-on-merge.yml.
+  #     files-with-code: 'action.yml,package.json,package-lock.json'
 
-      # The directories that contain source code for the action.  Only dirs with files that affect the action's
-      # execution should be included like src or dist.  Do not include dirs like .github or node_modules.
-      # ** This value must match the same dirs-with-code argument specified in increment-version-on-merge.yml.
-      dirs-with-code: 'src,dist'
+  #     # The directories that contain source code for the action.  Only dirs with files that affect the action's
+  #     # execution should be included like src or dist.  Do not include dirs like .github or node_modules.
+  #     # ** This value must match the same dirs-with-code argument specified in increment-version-on-merge.yml.
+  #     dirs-with-code: 'src,dist'
 
-      # The npm script to run to build the action.  This is typically 'npm run build' if the
-      # action needs to be compiled.  For composite-run-steps actions this is typically empty.
-      build-command: 'npm run build'
+  #     # The npm script to run to build the action.  This is typically 'npm run build' if the
+  #     # action needs to be compiled.  For composite-run-steps actions this is typically empty.
+  #     build-command: 'npm run build'
+
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      COMMITISH: '5747f8bc7393408b5087df60c94fccb7c0e33aa5'
+      releaseNoAssetTag: ''
+      releaseWithAssetTag: ''
+      draftRelease: ''
+      preReleaseNoAssetTag: ''
+      autoGeneratedReleaseNotesTag: ''
+      duplicateWithErrorTag: ''
+      duplicateNoErrorTag: ''
+      assetPathErrorTag: ''
+      assetNameErrorTag: ''
+      assetTypeErrorTag: ''
+
+      ACTUAL_UPLOAD_URL: ''
+      ACTUAL_DOWNLOAD_URL: ''
+      ACTUAL_HTML_URL: ''
+      ACTUAL_RELEASE_NAME: ''
+      ACTUAL_TAG_NAME: ''
+      ACTUAL_TARGET_COMMITISH: ''
+      ACTUAL_URL: ''
+      ACTUAL_DRAFT: ''
+      ACTUAL_PRE_RELEASE: ''
+      ACTUAL_BODY: ''
+
+      RELEASE_ID: ''
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create a tag for this run
+        run: |
+          TAG=$(date +'%Y_%m_%d_%H_%M_%S')
+          tag=$(date +'%Y_%m_%d_%H_%M_%S')
+          
+          # releaseNoAssetTag="$TAG-prod-release-no-asset"
+          # releaseWithAssetTag="$TAG-prod-release-with-asset"
+          # draftRelease="$TAG-draft-release"
+          # preReleaseNoAssetTag="$TAG-pre-release"
+          # autoGeneratedReleaseNotesTag="$TAG-auto-generated-release-notes"
+          # duplicateWithErrorTag="$TAG-duplicate-with-error"
+          # duplicateNoErrorTag="$TAG-duplicate-no-error"
+          # assetPathErrorTag="$TAG-error-asset-path"
+          # assetNameErrorTag="$TAG-error-asset-name"
+          # assetTypeErrorTag="$TAG-error-asset-content-type"
+
+          echo "releaseNoAssetTag=releaseNoAssetTag_$tag" >> $GITHUB_ENV
+          echo "releaseWithAssetTag=releaseWithAssetTag_$tag" >> $GITHUB_ENV
+          echo "draftRelease=draftRelease_$tag" >> $GITHUB_ENV
+          echo "preReleaseNoAssetTag=preReleaseNoAssetTag_$tag" >> $GITHUB_ENV
+          echo "autoGeneratedReleaseNotesTag=autoGeneratedReleaseNotesTag_$tag" >> $GITHUB_ENV
+          echo "duplicateWithErrorTag=duplicateWithErrorTag_$tag" >> $GITHUB_ENV
+          echo "duplicateNoErrorTag=duplicateNoErrorTag_$tag" >> $GITHUB_ENV
+          echo "assetPathErrorTag=assetPathErrorTag_$tag" >> $GITHUB_ENV
+          echo "assetNameErrorTag=assetNameErrorTag_$tag" >> $GITHUB_ENV
+          echo "assetTypeErrorTag=assetTypeErrorTag_$tag" >> $GITHUB_ENV
+
+      #--------------------------------------
+      # RELEASE WITHOUT AN ASSET AND NO NAME
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: When creating a production ready release without an asset or a name
+        uses: ./
+        if: always()
+        id: prod-release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: ${{ env.releaseNoAssetTag }}
+          commitish: ${{ env.COMMITISH}}
+          #release-name: ''
+          #asset-path: ''
+          #asset-name: ''
+          #asset-content-type: ''
+
+      - name: And the release should exist on GitHub
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const getReleaseFromGitHub = require('./test/get-release-from-github.js')
+            await getReleaseFromGitHub(github, core, '${{ steps.prod-release.outputs.release-id }}');
+
+      - name: Then the outcome should be success
+        if: always()
+        run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release.outcome }}"
+
+      
+
+      - name: And the release should have the correct properties set
+        if: always()
+        run: |
+          ./test/assert-values-match.sh --name "Release Name" --expected "${{ env.releaseNoAssetTag }}" --actual "${{ env.ACTUAL_RELEASE_NAME }}"
+          ./test/assert-values-match.sh --name "Tag Name"     --expected "${{ env.releaseNoAssetTag }}" --actual "${{ env.ACTUAL_TAG_NAME }}"
+          ./test/assert-values-match.sh --name "Commitish"    --expected "${{ env.COMMITISH }}"         --actual "${{ env.ACTUAL_TARGET_COMMITISH }}"
+          ./test/assert-values-match.sh --name "Draft"        --expected "false"                        --actual "${{ env.ACTUAL_DRAFT }}"
+          ./test/assert-values-match.sh --name "Pre-release"  --expected "false"                        --actual "${{ env.ACTUAL_PRE_RELEASE }}"
+          ./test/assert-values-match.sh --name "Body"         --expected ""                             --actual "${{ env.ACTUAL_BODY }}"
+
+      - name: And the outputs should be set and match GitHub release values
+        if: always()
+        run: |
+          ./test/assert-values-match.sh --name "release-html-url"           --expected "${{ env.ACTUAL_HTML_URL }}"   --actual "${{ steps.prod-release.outputs.release-html-url }}"
+          ./test/assert-values-match.sh --name "asset-upload-url"           --expected "${{ env.ACTUAL_UPLOAD_URL }}" --actual "${{ steps.prod-release.outputs.asset-upload-url }}"
+          ./test/assert-values-match.sh --name "asset-browser-download-url" --expected ""                             --actual "${{ steps.prod-release.outputs.asset-browser-download-url }}"
+
+      - name: Then cleanup the release by deleting it
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const deleteReleaseFromGitHub = require('./test/delete-release-from-github.js')
+            await deleteReleaseFromGitHub(github, '${{ steps.prod-release.outputs.release-id }}');
+
+      #--------------------------------------
+      # RELEASE WITH AN ASSET AND NAME
+      #--------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+
+      # - name: When creating a production ready release with an asset and a name
+      #   uses: ./
+      #   if: always()
+      #   id: prod-release-asset
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.releaseWithAssetTag }}
+      #     commitish: ''
+      #     release-name: ''
+      #     asset-path: ''
+      #     asset-name: ''
+      #     asset-content-type: ''
+
+      # #-----------------------------------------------
+      # # DRAFT RELEASE WITH RELEASE INFO IN BODY
+      # #-----------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a draft release and
+      #   uses: ./
+      #   if: always()
+      #   id: draft-release
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.draftRelease }}
+      #     commitish: ''
+      #     #body: ''
+      #     #body-path: ''
+      #     #draft: '' # default false
+
+      # #-----------------------------------------------
+      # # PRE-RELEASE WITH RELEASE INFO IN BODY FILE
+      # #-----------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a pre-release and release info in body file
+      #   uses: ./
+      #   if: always()
+      #   id: pre-release
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.preReleaseNoAssetTag }}
+      #     commitish: ''
+      #     #release-name: ''
+      #     #body: ''
+      #     #body-path: ''
+      #     #pre-release: '' # default false
+
+      # #-----------------------------------------------
+      # # AUTO GENERATE RELEASE NOTES
+      # #-----------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: auto-generated-release-notes
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.autoGeneratedReleaseNotesTag }}
+      #     commitish: ''
+      #     #generate-release-notes: '' # default false
+
+      # #-----------------------------------------
+      # # DUPLICATE EXISTING RELEASE AND REMOVE IT
+      # #-----------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: duplicate-no-error
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.duplicateNoErrorTag }}
+      #     commitish: ''
+      #     #release-name: ''
+      #     #body: ''
+      #     #body-path: ''
+      #     #draft: '' # default false
+      #     #pre-release: '' # default false
+      #     #delete-existing-release: '' # default false
+      #     #generate-release-notes: '' # default false
+      #     #asset-path: ''
+      #     #asset-name: ''
+      #     #asset-content-type: ''
+
+      # #-----------------------------------------------
+      # # DUPLICATE EXISTING RELEASE WITHOUT REMOVING IT
+      # #-----------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: duplicate-with-error
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.duplicateWithErrorTag }}
+      #     commitish: ''
+      #     #release-name: ''
+      #     #body: ''
+      #     #body-path: ''
+      #     #draft: '' # default false
+      #     #pre-release: '' # default false
+      #     #delete-existing-release: '' # default false
+      #     #generate-release-notes: '' # default false
+      #     #asset-path: ''
+      #     #asset-name: ''
+      #     #asset-content-type: ''
+
+      # #----------------------------------------------------------------
+      # # ASSET ERROR - include asset-path BUT DO NOT INCLUDE OTHERS
+      # #----------------------------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: error-asset-path
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.assetPathErrorTag }}
+      #     commitish: ''
+      #     #asset-path: ''
+      #     #asset-name: ''
+      #     #asset-content-type: ''
+
+      # #----------------------------------------------------------------
+      # # ASSET ERROR - asset-name - BUT DO NOT INCLUDE OTHERS
+      # #----------------------------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: error-asset-name
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.assetNameErrorTag }}
+      #     commitish: ''
+      #     #asset-path: ''
+      #     #asset-name: ''
+      #     #asset-content-type: ''
+
+      # #----------------------------------------------------------------
+      # # ASSET ERROR - asset-content-type - BUT DO NOT INCLUDE OTHERS
+      # #----------------------------------------------------------------
+      # - name: '-------------------------------------------------------------------------------------------------------'
+      #   run: echo ""
+      # - name: When creating a
+      #   uses: ./
+      #   if: always()
+      #   id: error-asset-type
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag-name: ${{ env.assetTypeErrorTag }}
+      #     commitish: ''
+      #     #asset-path: ''
+      #     #asset-name: ''
+      #     #asset-content-type: ''
+
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+        # release-id
+        # release-html-url
+        # asset-upload-url
+        # asset-browser-download-url (if uploading an asset)
