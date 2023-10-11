@@ -85,7 +85,15 @@ jobs:
       TAG_ASSET_TYPE_ERROR: ''
 
     steps:
-      - uses: actions/checkout@v3
+      
+      #--------------------------------------
+      # SETUP
+      #--------------------------------------
+      - name: '-------------------------------------------------------------------------------------------------------'
+        run: echo ""
+
+      - name: Setup - Checkout the action
+        uses: actions/checkout@v3
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -301,6 +309,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a draft release
         uses: ./
         if: always()
@@ -338,6 +347,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a pre-release
         uses: ./
         if: always()
@@ -375,6 +385,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a release with auto-generated release notes
         uses: ./
         if: always()
@@ -410,6 +421,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a release that duplicates another release without including the flag to first remove it
         uses: ./
         if: always()
@@ -431,6 +443,7 @@ jobs:
       #-----------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a duplicate release with flag to remove existing release set
         uses: ./
         if: always()
@@ -478,6 +491,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a
         uses: ./
         if: always()
@@ -507,6 +521,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a
         uses: ./
         if: always()
@@ -536,6 +551,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
+      
       - name: When creating a
         uses: ./
         if: always()
@@ -568,7 +584,7 @@ jobs:
             // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
             // fail unexpectedly.  We don't want a bunch of test releases and tags cluttering up the real thing.
             
-            const deleteReleaseFromGitHub = require('./test/api/delete-release-from-github.js')
+            const deleteReleaseFromGitHub = require('./test/teardown/delete-release-from-github.js');
             await deleteReleaseFromGitHub(github, core, '${{ steps.prod-release.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.prod-release-asset.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.with-name.outputs.release-id }}');
@@ -583,7 +599,7 @@ jobs:
             await deleteReleaseFromGitHub(github, core, '${{ steps.error-asset-name.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.error-asset-type.outputs.release-id }}');
             
-            const deleteTagFromGitHub = require('./test/api/delete-tag-from-github.js')
+            const deleteTagFromGitHub = require('./test/teardown/delete-tag-from-github.js');
             await deleteTagFromGitHub(github, core, '${{ env.TAG_RELEASE_NO_ASSET }}');
             await deleteTagFromGitHub(github, core, '${{ env.TAG_RELEASE_WITH_ASSET }}');
             await deleteTagFromGitHub(github, core, '${{ env.TAG_RELEASE_WITH_NAME }}');
