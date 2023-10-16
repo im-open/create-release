@@ -1,3 +1,7 @@
+# Tests
+
+Force tests to run from a fork to see what happens
+
 # create-release
 
 This action can be used to create a GitHub Release and optionally upload an asset to the release.  This action is based on two GitHub actions [create-release] and [upload-release-asset] which have been deprecated.
