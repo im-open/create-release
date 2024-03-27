@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Determine commitish to build and tag
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with: 
           script: |
             const targetRef = '${{ github.base_ref }}';
@@ -84,7 +84,7 @@ jobs:
             core.exportVariable('IS_PRERELEASE', isPreRelease);
             core.exportVariable('DO_BUILD', doBuild);
             
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: env.DO_BUILD == 'true'
         with: 
           fetch-depth: 0
@@ -109,7 +109,7 @@ jobs:
         if: env.DO_BUILD == 'true'
         id: create_release
         # You may also reference just the major or major.minor version.
-        uses: im-open/create-release@v3.1.4
+        uses: im-open/create-release@v3.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}

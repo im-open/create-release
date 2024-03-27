@@ -100,7 +100,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -134,7 +134,7 @@ jobs:
         if: always()
         id: prod-release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_RELEASE_NO_ASSET }}
           commitish: ${{ env.COMMITISH}}
           #release-name: ''
@@ -144,7 +144,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release.outcome }}"
 
       - name: And the release should exist on GitHub with props that match the inputs and defaults
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -182,7 +182,7 @@ jobs:
         if: always()
         id: prod-release-asset
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_RELEASE_WITH_ASSET }}
           commitish: ${{ env.COMMITISH}}
           asset-path: './test/files/test-asset.txt'
@@ -194,7 +194,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release-asset.outcome }}"
 
       - name: And the release should exist on GitHub with the populated release url props
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -218,7 +218,7 @@ jobs:
         if: always()
         id: with-name
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_RELEASE_WITH_NAME }}
           commitish: ${{ env.COMMITISH }}
           release-name: 'My test release'
@@ -228,7 +228,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.with-name.outcome }}"
 
       - name: And the release should exist on GitHub with the specified name
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -254,7 +254,7 @@ jobs:
         if: always()
         id: body-from-input
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_BODY_FROM_INPUT }}
           commitish: ${{ env.COMMITISH }}
           body: 'This is the body of the commit that came from an input arg.'
@@ -264,7 +264,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-input.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -287,7 +287,7 @@ jobs:
         if: always()
         id: body-from-file
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_BODY_FROM_FILE }}
           commitish: ${{ env.COMMITISH }}
           body-path: './test/files/test-body.txt'
@@ -297,7 +297,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-file.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -322,7 +322,7 @@ jobs:
         if: always()
         id: draft-release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_DRAFT_RELEASE }}
           commitish: ${{ env.COMMITISH }}
           draft: 'true'
@@ -332,7 +332,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.draft-release.outcome }}"
 
       - name: And the release should exist on GitHub as a draft release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -360,7 +360,7 @@ jobs:
         if: always()
         id: pre-release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_PRE_RELEASE }}
           commitish: ${{ env.COMMITISH }}
           prerelease: 'true'
@@ -370,7 +370,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.pre-release.outcome }}"
 
       - name: And the release should exist on GitHub as a pre-release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -398,7 +398,7 @@ jobs:
         if: always()
         id: auto-generated-notes
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_AUTO_GENERATED_NOTES }}
           commitish: ${{ env.COMMITISH }}
           generate-release-notes: true
@@ -408,7 +408,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.auto-generated-notes.outcome }}"
 
       - name: And the release should exist on GitHub with the release notes generated from the commits
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -435,7 +435,7 @@ jobs:
         id: duplicate-with-error
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           # Use the same tag-name and commitish that the release we are duplicating used
           tag-name: ${{ env.TAG_AUTO_GENERATED_NOTES }}
           commitish: ${{ env.COMMITISH }}
@@ -456,7 +456,7 @@ jobs:
         if: always()
         id: duplicate-no-error
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
 
           # This flag should delete the existing release and let it be re-created
           delete-existing-release: true
@@ -476,7 +476,7 @@ jobs:
             --value2 "${{ steps.duplicate-no-error.outputs.release-id }}"
 
       - name: And the new release should exist on GitHub
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -485,7 +485,7 @@ jobs:
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
       - name: And the original release should no longer exist
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseDoesNotExists = require('./test/assert-release-does-not-exist.js');
@@ -505,7 +505,7 @@ jobs:
         id: error-asset-path
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: '' # cause a failure by ommitting one of the required asset args
@@ -535,7 +535,7 @@ jobs:
         id: error-asset-name
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: './test/files/test-asset.txt'
@@ -565,7 +565,7 @@ jobs:
         id: error-asset-type
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: './test/files/test-asset.txt'
@@ -585,7 +585,7 @@ jobs:
 
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
