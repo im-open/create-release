@@ -100,7 +100,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -144,7 +144,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release.outcome }}"
 
       - name: And the release should exist on GitHub with props that match the inputs and defaults
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -194,7 +194,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release-asset.outcome }}"
 
       - name: And the release should exist on GitHub with the populated release url props
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -228,7 +228,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.with-name.outcome }}"
 
       - name: And the release should exist on GitHub with the specified name
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -264,7 +264,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-input.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -297,7 +297,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-file.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -332,7 +332,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.draft-release.outcome }}"
 
       - name: And the release should exist on GitHub as a draft release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -370,7 +370,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.pre-release.outcome }}"
 
       - name: And the release should exist on GitHub as a pre-release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -408,7 +408,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.auto-generated-notes.outcome }}"
 
       - name: And the release should exist on GitHub with the release notes generated from the commits
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -476,7 +476,7 @@ jobs:
             --value2 "${{ steps.duplicate-no-error.outputs.release-id }}"
 
       - name: And the new release should exist on GitHub
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -485,7 +485,7 @@ jobs:
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
       - name: And the original release should no longer exist
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseDoesNotExists = require('./test/assert-release-does-not-exist.js');
@@ -585,7 +585,7 @@ jobs:
 
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
