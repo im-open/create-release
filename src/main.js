@@ -93,18 +93,22 @@ async function createRelease() {
 
   // https://octokit.github.io/rest.js/v19#repos-create-release
   // Create a release
+  let request = {
+    owner: orgName,
+    repo: repoName,
+    tag_name: tag,
+    name: releaseName,
+    body: bodyFileContent || body,
+    draft,
+    prerelease,
+    generate_release_notes: shouldGenerateReleaseNotes,
+    target_commitish: commitish
+  };
+  console.log('The request being made:');
+  console.log(request);
+
   await octokit.rest.repos
-    .createRelease({
-      owner: orgName,
-      repo: repoName,
-      tag_name: tag,
-      name: releaseName,
-      body: bodyFileContent || body,
-      draft,
-      prerelease,
-      generate_release_notes: shouldGenerateReleaseNotes,
-      target_commitish: commitish
-    })
+    .createRelease(request)
     .then(createReleaseResponse => {
       release_id = createReleaseResponse.data.id;
       release_html_url = createReleaseResponse.data.html_url;
