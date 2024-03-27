@@ -134,7 +134,7 @@ jobs:
         if: always()
         id: prod-release
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_RELEASE_NO_ASSET }}
           commitish: ${{ env.COMMITISH}}
           #release-name: ''
@@ -182,7 +182,7 @@ jobs:
         if: always()
         id: prod-release-asset
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_RELEASE_WITH_ASSET }}
           commitish: ${{ env.COMMITISH}}
           asset-path: './test/files/test-asset.txt'
@@ -218,7 +218,7 @@ jobs:
         if: always()
         id: with-name
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_RELEASE_WITH_NAME }}
           commitish: ${{ env.COMMITISH }}
           release-name: 'My test release'
@@ -254,7 +254,7 @@ jobs:
         if: always()
         id: body-from-input
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_BODY_FROM_INPUT }}
           commitish: ${{ env.COMMITISH }}
           body: 'This is the body of the commit that came from an input arg.'
@@ -287,7 +287,7 @@ jobs:
         if: always()
         id: body-from-file
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_BODY_FROM_FILE }}
           commitish: ${{ env.COMMITISH }}
           body-path: './test/files/test-body.txt'
@@ -322,7 +322,7 @@ jobs:
         if: always()
         id: draft-release
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_DRAFT_RELEASE }}
           commitish: ${{ env.COMMITISH }}
           draft: 'true'
@@ -360,7 +360,7 @@ jobs:
         if: always()
         id: pre-release
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_PRE_RELEASE }}
           commitish: ${{ env.COMMITISH }}
           prerelease: 'true'
@@ -398,7 +398,7 @@ jobs:
         if: always()
         id: auto-generated-notes
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_AUTO_GENERATED_NOTES }}
           commitish: ${{ env.COMMITISH }}
           generate-release-notes: true
@@ -435,7 +435,7 @@ jobs:
         id: duplicate-with-error
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           # Use the same tag-name and commitish that the release we are duplicating used
           tag-name: ${{ env.TAG_AUTO_GENERATED_NOTES }}
           commitish: ${{ env.COMMITISH }}
@@ -456,7 +456,7 @@ jobs:
         if: always()
         id: duplicate-no-error
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
 
           # This flag should delete the existing release and let it be re-created
           delete-existing-release: true
@@ -505,7 +505,7 @@ jobs:
         id: error-asset-path
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: '' # cause a failure by ommitting one of the required asset args
@@ -535,7 +535,7 @@ jobs:
         id: error-asset-name
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: './test/files/test-asset.txt'
@@ -565,7 +565,7 @@ jobs:
         id: error-asset-type
         continue-on-error: true # This is needed because we expect the step to fail.  We need it to "pass" in order for the test job to succeed.
         with:
-          github-token: ${{ secrets.PIPELINE_BOT_TOKEN }}
+          github-token: ${{ secrets.PIPELINE_BOT_PAT }}
           tag-name: ${{ env.TAG_ASSET_PATH_ERROR }}
           commitish: ${{ env.COMMITISH }}
           asset-path: './test/files/test-asset.txt'
