@@ -51,7 +51,7 @@ This action also has the option of deleting the release if it already exists.  I
 ## Usage Examples
 
 ```yml
-on: 
+on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
 
@@ -66,27 +66,27 @@ jobs:
     steps:
       - name: Determine commitish to build and tag
         uses: actions/github-script@v6
-        with: 
+        with:
           script: |
             const targetRef = '${{ github.base_ref }}';
             const sourceRef = '${{ github.head_ref }}';
             const mergeRef = '${{ github.ref }}';
-            
+
             const prClosed = '${{ github.event.action }}' === 'closed';
             const prMerged = '${{ github.event.pull_request.merged }}' === 'true';
             const prMergedToMain = prMerged && targetRef === 'main';
             const isPreRelease = !prMergedToMain
             const doBuild = prClosed && !prMerged? false : true;
-            
+
             const refToBuildAndTag = prMergedToMain ? mergeRef : sourceRef;
-            
+
             core.exportVariable('REF_TO_BUILD', refToBuildAndTag);
             core.exportVariable('IS_PRERELEASE', isPreRelease);
             core.exportVariable('DO_BUILD', doBuild);
-            
+
       - uses: actions/checkout@v3
         if: env.DO_BUILD == 'true'
-        with: 
+        with:
           fetch-depth: 0
           ref: ${{ env.REF_TO_BUILD }}
 
@@ -102,14 +102,14 @@ jobs:
         if: env.DO_BUILD == 'true'
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
-          dotnet publish -c Release -o ./published_app 
+          dotnet publish -c Release -o ./published_app
           (cd published_app && zip -r ../${{env.DEPLOY_ZIP}} .)
 
       - name: Create Release
         if: env.DO_BUILD == 'true'
         id: create_release
         # You may also reference just the major or major.minor version.
-        uses: im-open/create-release@v3.1.4
+        uses: im-open/create-release@v3.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
@@ -147,7 +147,7 @@ This repo uses [git-version-lite] in its workflows to examine commit messages to
 
 ### Source Code Changes
 
-The files and directories that are considered source code are listed in the `files-with-code` and `dirs-with-code` arguments in both the [build-and-review-pr] and [increment-version-on-merge] workflows.  
+The files and directories that are considered source code are listed in the `files-with-code` and `dirs-with-code` arguments in both the [build-and-review-pr] and [increment-version-on-merge] workflows.
 
 If a PR contains source code changes, the README.md should be updated with the latest action version and the action should be recompiled.  The [build-and-review-pr] workflow will ensure these steps are performed when they are required.  The workflow will provide instructions for completing these steps if the PR Author does not initially complete them.
 
@@ -168,7 +168,7 @@ If changes are made to the action's [source code], the [usage examples] section 
 
 ### Tests
 
-The [build-and-review-pr] workflow includes tests which are linked to a status check. That status check needs to succeed before a PR is merged to the default branch.  When a PR comes from a branch, the `GITHUB_TOKEN` has the necessary permissions required to run the tests successfully.  
+The [build-and-review-pr] workflow includes tests which are linked to a status check. That status check needs to succeed before a PR is merged to the default branch.  When a PR comes from a branch, the `GITHUB_TOKEN` has the necessary permissions required to run the tests successfully.
 
 When a PR comes from a fork, the tests won't have the necessary permissions to run since the `GITHUB_TOKEN` only has `read` access for all scopes. When a PR comes from a fork, the changes should be reviewed, then merged into an intermediate branch by repository owners so tests can be run against the PR changes.  Once the tests have passed, changes can be merged into the default branch.
 
