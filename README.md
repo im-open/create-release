@@ -6,7 +6,7 @@ This action has the option of uploading a single asset to the release.  If more 
 
 This action also has the option of deleting the release if it already exists.  If a workflow tries to create a release that already exists it will fail which may happen when a workflow is re-run.  This functionality is also provided in the [im-open/delete-release-by-tag] action if a release needs to be deleted before the release is created.
 
-## Index <!-- omit in toc -->
+## Index <!--  omit in toc  -->
 
 - [create-release](#create-release)
   - [Inputs](#inputs)
