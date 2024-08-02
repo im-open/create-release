@@ -109,7 +109,7 @@ jobs:
         if: env.DO_BUILD == 'true'
         id: create_release
         # You may also reference just the major or major.minor version.
-        uses: im-open/create-release@v3.1.0
+        uses: im-open/create-release@v3.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
