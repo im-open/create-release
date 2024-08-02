@@ -2,3 +2,4 @@ node_modules/
 /.vscode/launch.json
 /.secret
 /pull-request.json
+.DS_Store
