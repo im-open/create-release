@@ -153,7 +153,7 @@ async function uploadAsset(uploadUrl) {
 }
 
 async function run() {
-  core.info(`Creating release in ${orgName}\${repoName}`);
+  core.info(`Creating release in ${orgName}/${repoName}`);
   if (isEmpty(assetPath) && isEmpty(assetName) && isEmpty(assetContentType)) {
     hasAssetToUpload = false;
   } else if (isEmpty(assetPath) || isEmpty(assetName) || isEmpty(assetContentType)) {

@@ -65,9 +65,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # NOTE:  This relies on a release created for v2.0.0.  If it is removed, the test
+      # NOTE:  This relies on the last release being v2.0.0.  If it is removed, the test
       #        that relies on it will fail, specifically the auto-generated release notes test.
-      COMMITISH: '525c2ff7b76faa30e5d71b715e8b1dc1e5a1af53' # v2.0.1
+      #        Releases aren't utilized by users (tags are), it is just there for testing.
+      COMMITISH: 'main'
 
       # Generated tags for each of the scenarios we'll be testing
       TAG_RELEASE_NO_ASSET: ''
@@ -85,7 +86,7 @@ jobs:
       TAG_ASSET_TYPE_ERROR: ''
 
     steps:
-      
+
       #--------------------------------------
       # SETUP
       #--------------------------------------
@@ -100,7 +101,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -144,7 +145,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release.outcome }}"
 
       - name: And the release should exist on GitHub with props that match the inputs and defaults
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -154,16 +155,16 @@ jobs:
             const releaseId = '${{ steps.prod-release.outputs.release-id }}';
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
-            const expectedPropsFromInputs = { 
+            const expectedPropsFromInputs = {
               // These items should match the args exactly
               tagName: '${{ env.TAG_RELEASE_NO_ASSET }}',
               commitish: '${{ env.COMMITISH }}',
 
               // These items have default values, test here so we don't need specific tests for the defaults
-              releaseName: '${{ env.TAG_RELEASE_NO_ASSET }}',  
-              draft: false,  
+              releaseName: '${{ env.TAG_RELEASE_NO_ASSET }}',
+              draft: false,
               preRelease: false,
-              body: '' 
+              body: ''
             };
             assertReleasePropsMatchInputArgs(core, actualRelease, expectedPropsFromInputs);
 
@@ -194,7 +195,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release-asset.outcome }}"
 
       - name: And the release should exist on GitHub with the populated release url props
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -228,7 +229,8 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.with-name.outcome }}"
 
       - name: And the release should exist on GitHub with the specified name
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -237,7 +239,7 @@ jobs:
             const releaseId = '${{ steps.with-name.outputs.release-id }}';
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
-            const expectedPropsFromInputs = { 
+            const expectedPropsFromInputs = {
               releaseName: 'My test release',
               tagName: '${{ env.TAG_RELEASE_WITH_NAME }}'
             };
@@ -264,7 +266,8 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-input.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -297,7 +300,8 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-file.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
@@ -316,7 +320,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a draft release
         uses: ./
         if: always()
@@ -332,7 +336,8 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.draft-release.outcome }}"
 
       - name: And the release should exist on GitHub as a draft release
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -354,7 +359,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a pre-release
         uses: ./
         if: always()
@@ -370,7 +375,8 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.pre-release.outcome }}"
 
       - name: And the release should exist on GitHub as a pre-release
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -392,7 +398,7 @@ jobs:
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a release with auto-generated release notes
         uses: ./
         if: always()
@@ -408,27 +414,29 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.auto-generated-notes.outcome }}"
 
       - name: And the release should exist on GitHub with the release notes generated from the commits
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const assertReleaseExists = require('./test/assert-release-exists.js');
-            const assertReleasePropsMatchInputArgs = require('./test/assert-release-props-match-input-args.js');
+            const assertBodyIncludesFragments = require('./test/assert-value-includes-fragments.js');
 
             const releaseId = '${{ steps.auto-generated-notes.outputs.release-id }}';
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
-            let expectedNotes = fs.readFileSync('./test/files/test-notes.txt', 'utf8');
-            expectedNotes = expectedNotes.replace('REPLACEME', '${{ env.TAG_AUTO_GENERATED_NOTES }}')
-            const expectedPropsFromInputs = { body: expectedNotes};
-            assertReleasePropsMatchInputArgs(core, actualRelease, expectedPropsFromInputs);
+            const expectedStart = fs.readFileSync('./test/files/test-notes-start.txt', 'utf8');
+            let expectedEnd = fs.readFileSync('./test/files/test-notes-end.txt', 'utf8');
+            expectedEnd = expectedEnd.replace('REPLACEME', '${{ env.TAG_AUTO_GENERATED_NOTES }}')
+            
+            assertBodyIncludesFragments(core, actualRelease.body, expectedStart, expectedEnd);
 
       #-----------------------------------------------
       # DUPLICATE EXISTING RELEASE WITHOUT REMOVING IT
       #-----------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a release that duplicates another release without including the flag to first remove it
         uses: ./
         if: always()
@@ -450,7 +458,7 @@ jobs:
       #-----------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a duplicate release with flag to remove existing release set
         uses: ./
         if: always()
@@ -470,13 +478,15 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.duplicate-no-error.outcome }}"
 
       - name: And the release should have been re-created with a new id
+        if: always()
         run: |
           ./test/assert-values-do-not-match.sh --name "Release Id" \
             --value1 "${{ steps.auto-generated-notes.outputs.release-id }}" \
             --value2 "${{ steps.duplicate-no-error.outputs.release-id }}"
 
       - name: And the new release should exist on GitHub
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -485,7 +495,8 @@ jobs:
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
       - name: And the original release should no longer exist
-        uses: actions/github-script@v6
+        if: always()
+        uses: actions/github-script@v7
         with:
           script: |
             const assertReleaseDoesNotExists = require('./test/assert-release-does-not-exist.js');
@@ -498,7 +509,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a
         uses: ./
         if: always()
@@ -517,6 +528,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-path.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-path.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-path.outputs.release-html-url }}"
@@ -528,7 +540,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a
         uses: ./
         if: always()
@@ -547,6 +559,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-name.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-name.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-name.outputs.release-html-url }}"
@@ -558,7 +571,7 @@ jobs:
       #----------------------------------------------------------------
       - name: '-------------------------------------------------------------------------------------------------------'
         run: echo ""
-      
+
       - name: When creating a
         uses: ./
         if: always()
@@ -577,6 +590,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-type.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-type.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-type.outputs.release-html-url }}"
@@ -585,12 +599,12 @@ jobs:
 
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
-            // Not all of these will end up with a tag and a release, but run them all just in case any of the tests 
+            // Not all of these will end up with a tag and a release, but run them all just in case any of the tests
             // fail unexpectedly.  We don't want a bunch of test releases and tags cluttering up the real thing.
-            
+
             const deleteReleaseFromGitHub = require('./test/teardown/delete-release-from-github.js');
             await deleteReleaseFromGitHub(github, core, '${{ steps.prod-release.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.prod-release-asset.outputs.release-id }}');
@@ -605,7 +619,7 @@ jobs:
             await deleteReleaseFromGitHub(github, core, '${{ steps.error-asset-path.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.error-asset-name.outputs.release-id }}');
             await deleteReleaseFromGitHub(github, core, '${{ steps.error-asset-type.outputs.release-id }}');
-            
+
             const deleteTagFromGitHub = require('./test/teardown/delete-tag-from-github.js');
             await deleteTagFromGitHub(github, core, '${{ env.TAG_RELEASE_NO_ASSET }}');
             await deleteTagFromGitHub(github, core, '${{ env.TAG_RELEASE_WITH_ASSET }}');
