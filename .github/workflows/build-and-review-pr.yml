@@ -67,7 +67,7 @@ jobs:
     env:
       # NOTE:  This relies on a release created for v2.0.0.  If it is removed, the test
       #        that relies on it will fail, specifically the auto-generated release notes test.
-      COMMITISH: '5747f8bc7393408b5087df60c94fccb7c0e33aa5' # TAG: v3.1.4
+      COMMITISH: '525c2ff7b76faa30e5d71b715e8b1dc1e5a1af53' # v2.0.1
 
       # Generated tags for each of the scenarios we'll be testing
       TAG_RELEASE_NO_ASSET: ''
