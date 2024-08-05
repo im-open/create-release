@@ -65,9 +65,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      # NOTE:  This relies on a release created for v2.0.0.  If it is removed, the test
+      # NOTE:  This relies on the last release being v2.0.0.  If it is removed, the test
       #        that relies on it will fail, specifically the auto-generated release notes test.
-      COMMITISH: '525c2ff7b76faa30e5d71b715e8b1dc1e5a1af53' # v2.0.1
+      #        Releases aren't utilized by users (tags are), it is just there for testing.
+      COMMITISH: 'main'
 
       # Generated tags for each of the scenarios we'll be testing
       TAG_RELEASE_NO_ASSET: ''
@@ -228,6 +229,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.with-name.outcome }}"
 
       - name: And the release should exist on GitHub with the specified name
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -264,6 +266,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-input.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -297,6 +300,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.body-from-file.outcome }}"
 
       - name: And the release should exist on GitHub with the specified body
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -332,6 +336,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.draft-release.outcome }}"
 
       - name: And the release should exist on GitHub as a draft release
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -370,6 +375,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.pre-release.outcome }}"
 
       - name: And the release should exist on GitHub as a pre-release
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -408,20 +414,22 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.auto-generated-notes.outcome }}"
 
       - name: And the release should exist on GitHub with the release notes generated from the commits
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const assertReleaseExists = require('./test/assert-release-exists.js');
-            const assertReleasePropsMatchInputArgs = require('./test/assert-release-props-match-input-args.js');
+            const assertBodyIncludesFragments = require('./test/assert-value-includes-fragments.js');
 
             const releaseId = '${{ steps.auto-generated-notes.outputs.release-id }}';
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
-            let expectedNotes = fs.readFileSync('./test/files/test-notes.txt', 'utf8');
-            expectedNotes = expectedNotes.replace('REPLACEME', '${{ env.TAG_AUTO_GENERATED_NOTES }}')
-            const expectedPropsFromInputs = { body: expectedNotes};
-            assertReleasePropsMatchInputArgs(core, actualRelease, expectedPropsFromInputs);
+            const expectedStart = fs.readFileSync('./test/files/test-notes-start.txt', 'utf8');
+            let expectedEnd = fs.readFileSync('./test/files/test-notes-end.txt', 'utf8');
+            expectedEnd = expectedEnd.replace('REPLACEME', '${{ env.TAG_AUTO_GENERATED_NOTES }}')
+            
+            assertBodyIncludesFragments(core, actualRelease.body, expectedStart, expectedEnd);
 
       #-----------------------------------------------
       # DUPLICATE EXISTING RELEASE WITHOUT REMOVING IT
@@ -470,12 +478,14 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.duplicate-no-error.outcome }}"
 
       - name: And the release should have been re-created with a new id
+        if: always()
         run: |
           ./test/assert-values-do-not-match.sh --name "Release Id" \
             --value1 "${{ steps.auto-generated-notes.outputs.release-id }}" \
             --value2 "${{ steps.duplicate-no-error.outputs.release-id }}"
 
       - name: And the new release should exist on GitHub
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -485,6 +495,7 @@ jobs:
             const actualRelease = await assertReleaseExists(github, core, releaseId);
 
       - name: And the original release should no longer exist
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -517,6 +528,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-path.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-path.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-path.outputs.release-html-url }}"
@@ -547,6 +559,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-name.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-name.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-name.outputs.release-html-url }}"
@@ -577,6 +590,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "failure" --actual "${{ steps.error-asset-type.outcome }}"
 
       - name: And the action should return undefined values
+        if: always()
         run: |
           ./test/assert-values-match.sh --name "release ID" --expected "" --actual "${{ steps.error-asset-type.outputs.release-id }}"
           ./test/assert-values-match.sh --name "html url" --expected "" --actual "${{ steps.error-asset-type.outputs.release-html-url }}"
