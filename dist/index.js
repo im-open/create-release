@@ -6334,7 +6334,10 @@ var require_dispatcher_base = __commonJS({
         if (callback === void 0) {
           return new Promise((resolve, reject) => {
             this.destroy(err, (err2, data) => {
-              return err2 ? /* istanbul ignore next: should never error */ reject(err2) : resolve(data);
+              return err2
+                ? /* istanbul ignore next: should never error */
+                  reject(err2)
+                : resolve(data);
             });
           });
         }
