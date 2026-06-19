@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: Determine commitish to build and tag
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const targetRef = '${{ github.base_ref }}';
@@ -84,7 +84,7 @@ jobs:
             core.exportVariable('IS_PRERELEASE', isPreRelease);
             core.exportVariable('DO_BUILD', doBuild);
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: env.DO_BUILD == 'true'
         with:
           fetch-depth: 0
@@ -93,7 +93,7 @@ jobs:
       - name: Calculate next version
         id: version
         if: env.DO_BUILD == 'true'
-        uses: im-open/git-version-lite@v2
+        uses: im-open/git-version-lite@v4
         with:
           calculate-prerelease-version: true
           branch-name: ${{ github.head_ref }}
@@ -109,7 +109,7 @@ jobs:
         if: env.DO_BUILD == 'true'
         id: create_release
         # You may also reference just the major or major.minor version.
-        uses: im-open/create-release@v3.2.1
+        uses: im-open/create-release@v4.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.version.outputs.VERSION }}
