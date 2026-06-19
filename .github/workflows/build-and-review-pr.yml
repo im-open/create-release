@@ -21,6 +21,10 @@ on:
   #   without disabling that requirement.  If we have a status check that is always produced,
   #   we can also use that to require all branches be up to date before they are merged.
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build-and-review-pr:
     # This reusable workflow will check to see if an action's source code has changed based on
@@ -34,7 +38,7 @@ jobs:
     # This workflow assumes:
     #  - The main README.md is at the root of the repo
     #  - The README contains a contribution guidelines and usage examples section
-    uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v1
+    uses: im-open/.github/.github/workflows/reusable-build-and-review-pr.yml@v2
     with:
       action-name: ${{ github.repository }}
       default-branch: main
@@ -101,7 +105,7 @@ jobs:
         run: echo ""
 
       - name: Setup - Checkout the action
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup - Dynamically generate tags for each of the scenarios to use with their release
         run: |
@@ -145,7 +149,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release.outcome }}"
 
       - name: And the release should exist on GitHub with props that match the inputs and defaults
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -195,7 +199,7 @@ jobs:
         run: ./test/assert-values-match.sh --name "step outcome" --expected "success" --actual "${{ steps.prod-release-asset.outcome }}"
 
       - name: And the release should exist on GitHub with the populated release url props
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -230,7 +234,7 @@ jobs:
 
       - name: And the release should exist on GitHub with the specified name
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -267,7 +271,7 @@ jobs:
 
       - name: And the release should exist on GitHub with the specified body
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -301,7 +305,7 @@ jobs:
 
       - name: And the release should exist on GitHub with the specified body
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -337,7 +341,7 @@ jobs:
 
       - name: And the release should exist on GitHub as a draft release
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -376,7 +380,7 @@ jobs:
 
       - name: And the release should exist on GitHub as a pre-release
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -415,7 +419,7 @@ jobs:
 
       - name: And the release should exist on GitHub with the release notes generated from the commits
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -486,7 +490,7 @@ jobs:
 
       - name: And the new release should exist on GitHub
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseExists = require('./test/assert-release-exists.js');
@@ -496,7 +500,7 @@ jobs:
 
       - name: And the original release should no longer exist
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const assertReleaseDoesNotExists = require('./test/assert-release-does-not-exist.js');
@@ -599,7 +603,7 @@ jobs:
 
       - name: Teardown - Cleanup all the releases by deleting them
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             // Not all of these will end up with a tag and a release, but run them all just in case any of the tests

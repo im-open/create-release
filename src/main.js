@@ -1,6 +1,6 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const fs = require('fs');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import fs from 'fs';
 
 const requiredArgOptions = {
   required: true,
